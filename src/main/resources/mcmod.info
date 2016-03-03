@@ -1,0 +1,16 @@
+[
+{
+  "modid": "ChunkAnimator",
+  "name": "Chunk Animator",
+  "description": "A small client side mod that animates the appeareance of chunks so that they don't just instantly appear",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["lumien"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
