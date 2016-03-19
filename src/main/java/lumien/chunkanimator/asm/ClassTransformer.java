@@ -93,7 +93,7 @@ public class ClassTransformer implements IClassTransformer
 			InsnList toInsert = new InsnList();
 			toInsert.add(new VarInsnNode(Opcodes.ALOAD, 0));
 			toInsert.add(new VarInsnNode(Opcodes.ALOAD, 1));
-			toInsert.add(new MethodInsnNode(INVOKESTATIC, asmHandler, "setPosition", "(Lnet/minecraft/client/renderer/chunk/RenderChunk;Lnet/minecraft/util/BlockPos;)V", false));
+			toInsert.add(new MethodInsnNode(INVOKESTATIC, asmHandler, "setPosition", "(Lnet/minecraft/client/renderer/chunk/RenderChunk;Lnet/minecraft/util/math/BlockPos;)V", false));
 
 			setPosition.instructions.insert(toInsert);
 			
