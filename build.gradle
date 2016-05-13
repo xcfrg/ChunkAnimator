@@ -13,7 +13,7 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "1.1"
+version = "1.1.1"
 group= "lumien.chunkanimator"
 archivesBaseName = "ChunkAnimator-MC1.9"
 
@@ -24,7 +24,7 @@ jar {
 }
 
 minecraft {
-    version = "1.9-12.16.0.1770-1.9"
+    version = "1.9-12.16.1.1901"
     runDir = "run"
     
     // the mappings can be changed at any time, and must be in the following format.

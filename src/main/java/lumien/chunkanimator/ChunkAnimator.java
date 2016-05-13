@@ -40,7 +40,7 @@ public class ChunkAnimator
 	@SubscribeEvent
 	public void onConfigChanged(OnConfigChangedEvent event)
 	{
-		if (event.modID.equals(Reference.MOD_ID))
+		if (event.getModID().equals(Reference.MOD_ID))
 		{
 			config.syncConfig();
 		}
