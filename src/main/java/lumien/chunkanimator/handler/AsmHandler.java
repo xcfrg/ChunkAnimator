@@ -11,8 +11,8 @@ public class AsmHandler
 		ChunkAnimator.INSTANCE.animationHandler.preRender(renderChunk);
 	}
 
-	public static void setPosition(RenderChunk renderChunk, BlockPos position)
+	public static void setOrigin(RenderChunk renderChunk, int oX, int oY, int oZ)
 	{
-		ChunkAnimator.INSTANCE.animationHandler.setPosition(renderChunk, position);
+		ChunkAnimator.INSTANCE.animationHandler.setOrigin(renderChunk, new BlockPos(oX, oY, oZ));
 	}
 }

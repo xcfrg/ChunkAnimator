@@ -131,7 +131,7 @@ public class AnimationHandler
 		}
 	}
 
-	public void setPosition(RenderChunk renderChunk, BlockPos position)
+	public void setOrigin(RenderChunk renderChunk, BlockPos position)
 	{
 		if (Minecraft.getMinecraft().thePlayer != null)
 		{
