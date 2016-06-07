@@ -9,6 +9,17 @@ import net.minecraft.client.renderer.chunk.RenderChunk;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
+import penner.easing.Back;
+import penner.easing.Bounce;
+import penner.easing.Circ;
+import penner.easing.Cubic;
+import penner.easing.Elastic;
+import penner.easing.Expo;
+import penner.easing.Linear;
+import penner.easing.Quad;
+import penner.easing.Quart;
+import penner.easing.Quint;
+import penner.easing.Sine;
 
 public class AnimationHandler
 {
@@ -81,9 +92,9 @@ public class AnimationHandler
 
 			if (timeDif < animationDuration)
 			{
-				double chunkY = renderChunk.getPosition().getY();
+				int chunkY = renderChunk.getPosition().getY();
 				double modY;
-
+				
 				if (mode == 2)
 				{
 					if (chunkY < Minecraft.getMinecraft().theWorld.provider.getHorizon())
@@ -104,12 +115,10 @@ public class AnimationHandler
 				switch (mode)
 				{
 					case 0:
-						modY = chunkY / (animationDuration) * timeDif;
-						GlStateManager.translate(0, -chunkY + modY, 0);
+						GlStateManager.translate(0, -chunkY + getFunctionValue(timeDif, 0, chunkY, animationDuration), 0);
 						break;
 					case 1:
-						modY = (256D - chunkY) / (animationDuration) * timeDif;
-						GlStateManager.translate(0, 256 - chunkY - modY, 0);
+						GlStateManager.translate(0, 256 - chunkY - getFunctionValue(timeDif, 0, 256-chunkY, animationDuration), 0);
 						break;
 					case 3:
 						EnumFacing chunkFacing = animationData.chunkFacing;
@@ -119,6 +128,8 @@ public class AnimationHandler
 							Vec3i vec = chunkFacing.getDirectionVec();
 							double mod = -(200D - (200D / animationDuration * timeDif));
 
+							mod = -(200 - getFunctionValue(timeDif, 0, 200, animationDuration));
+							
 							GlStateManager.translate(vec.getX() * mod, 0, vec.getZ() * mod);
 						}
 						break;
@@ -129,6 +140,37 @@ public class AnimationHandler
 				timeStamps.remove(renderChunk);
 			}
 		}
+	}
+
+	private float getFunctionValue(float t, float b, float c, float d)
+	{
+		switch (ChunkAnimator.INSTANCE.config.getEasingFunction())
+		{
+			case 0: // Linear
+				return Linear.easeOut(t, b, c, d);
+			case 1: // Quadratic Out
+				return Quad.easeOut(t, b, c, d);
+			case 2: // Cubic Out
+				return Cubic.easeOut(t, b, c, d);
+			case 3: // Quartic Out
+				return Quart.easeOut(t, b, c, d);
+			case 4: // Quintic Out
+				return Quint.easeOut(t, b, c, d);
+			case 5: // Expo Out
+				return Expo.easeOut(t, b, c, d);
+			case 6: // Sin Out
+				return Sine.easeOut(t, b, c, d);
+			case 7: // Circle Out
+				return Circ.easeOut(t, b, c, d);
+			case 8: // Back
+				return Back.easeOut(t, b, c, d);
+			case 9: // Bounce
+				return Bounce.easeOut(t, b, c, d);
+			case 10: // Elastic
+				return Elastic.easeOut(t, b, c, d);
+		}
+		
+		return Sine.easeOut(t, b, c, d);
 	}
 
 	public void setOrigin(RenderChunk renderChunk, BlockPos position)
