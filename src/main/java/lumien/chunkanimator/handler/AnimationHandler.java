@@ -47,7 +47,7 @@ public class AnimationHandler
 				// Mode 4 Set Chunk Facing
 				if (mode == 4)
 				{
-					BlockPos zeroedPlayerPosition = Minecraft.getMinecraft().thePlayer.getPosition();
+					BlockPos zeroedPlayerPosition = Minecraft.getMinecraft().player.getPosition();
 					zeroedPlayerPosition = zeroedPlayerPosition.add(0, -zeroedPlayerPosition.getY(), 0);
 
 					BlockPos zeroedCenteredChunkPos = renderChunk.getPosition().add(8, -renderChunk.getPosition().getY(), 8);
@@ -94,10 +94,10 @@ public class AnimationHandler
 			{
 				int chunkY = renderChunk.getPosition().getY();
 				double modY;
-				
+
 				if (mode == 2)
 				{
-					if (chunkY < Minecraft.getMinecraft().theWorld.provider.getHorizon())
+					if (chunkY < Minecraft.getMinecraft().world.provider.getHorizon())
 					{
 						mode = 0;
 					}
@@ -118,7 +118,7 @@ public class AnimationHandler
 						GlStateManager.translate(0, -chunkY + getFunctionValue(timeDif, 0, chunkY, animationDuration), 0);
 						break;
 					case 1:
-						GlStateManager.translate(0, 256 - chunkY - getFunctionValue(timeDif, 0, 256-chunkY, animationDuration), 0);
+						GlStateManager.translate(0, 256 - chunkY - getFunctionValue(timeDif, 0, 256 - chunkY, animationDuration), 0);
 						break;
 					case 3:
 						EnumFacing chunkFacing = animationData.chunkFacing;
@@ -129,7 +129,7 @@ public class AnimationHandler
 							double mod = -(200D - (200D / animationDuration * timeDif));
 
 							mod = -(200 - getFunctionValue(timeDif, 0, 200, animationDuration));
-							
+
 							GlStateManager.translate(vec.getX() * mod, 0, vec.getZ() * mod);
 						}
 						break;
@@ -169,16 +169,16 @@ public class AnimationHandler
 			case 10: // Elastic
 				return Elastic.easeOut(t, b, c, d);
 		}
-		
+
 		return Sine.easeOut(t, b, c, d);
 	}
 
 	public void setOrigin(RenderChunk renderChunk, BlockPos position)
 	{
-		if (Minecraft.getMinecraft().thePlayer != null)
+		if (Minecraft.getMinecraft().player != null)
 		{
 			boolean flag = true;
-			BlockPos zeroedPlayerPosition = Minecraft.getMinecraft().thePlayer.getPosition();
+			BlockPos zeroedPlayerPosition = Minecraft.getMinecraft().player.getPosition();
 			zeroedPlayerPosition = zeroedPlayerPosition.add(0, -zeroedPlayerPosition.getY(), 0);
 			BlockPos zeroedCenteredChunkPos = position.add(8, -position.getY(), 8);
 
@@ -225,7 +225,15 @@ public class AnimationHandler
 				AnimationData animationData = new AnimationData(-1L, chunkFacing);
 				timeStamps.put(renderChunk, animationData);
 			}
+			else
+			{
+				if (timeStamps.containsKey(renderChunk))
+				{
+					timeStamps.remove(renderChunk);
+				}
+			}
 		}
+
 	}
 
 	private class AnimationData
