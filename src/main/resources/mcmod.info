@@ -1,6 +1,6 @@
 [
 {
-  "modid": "ChunkAnimator",
+  "modid": "chunkanimator",
   "name": "Chunk Animator",
   "description": "A small client side mod that animates the appeareance of chunks so that they don't just instantly appear",
   "version": "${version}",
