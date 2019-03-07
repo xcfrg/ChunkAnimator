@@ -1,0 +1,4 @@
+{
+	"RenderChunk": "transformer/RenderChunk.js",
+	"ChunkRenderContainer": "transformer/ChunkRenderContainer.js"
+}

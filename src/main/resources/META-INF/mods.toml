@@ -1,0 +1,20 @@
+modLoader="javafml" #mandatory
+
+loaderVersion="[24,)" #mandatory (24 is current forge version)
+issueTrackerURL="https://github.com/lumien231/Chunk-Animator" #optional
+
+displayURL="https://minecraft.curseforge.com/projects/chunk-animator" #optional
+
+authors="Lumien" #optional
+
+[[mods]] #mandatory
+
+modId="chunkanimator" #mandatory
+
+version="${file.jarVersion}" #mandatory
+
+displayName="Chunk Animator" #mandatory
+
+description='''
+A small client side mod that animates the appeareance of chunks so that they don't just instantly appear
+'''

@@ -3,46 +3,32 @@ package lumien.chunkanimator;
 import lumien.chunkanimator.config.ChunkAnimatorConfig;
 import lumien.chunkanimator.handler.AnimationHandler;
 import lumien.chunkanimator.lib.Reference;
-import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-@Mod(modid = Reference.MOD_ID,name=Reference.MOD_NAME,version = Reference.MOD_VERSION,guiFactory = "lumien.chunkanimator.config.ChunkAnimatorGuiFactory",clientSideOnly=true)
+@Mod(Reference.MOD_ID)
 public class ChunkAnimator
 {
-	@Instance(value = Reference.MOD_ID)
 	public static ChunkAnimator INSTANCE;
 	
 	public AnimationHandler animationHandler;
 	
 	public ChunkAnimatorConfig config;
 	
-	@EventHandler
-	public void preInit(FMLPreInitializationEvent event)
+	public ChunkAnimator()
 	{
+		INSTANCE = this;
+		
+        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        
+		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ChunkAnimatorConfig.spec);
+		modEventBus.register(ChunkAnimatorConfig.class);
+		
 		animationHandler = new AnimationHandler();
-		
-		config = new ChunkAnimatorConfig();
-		config.preInit(event);
-		
-		MinecraftForge.EVENT_BUS.register(this);
-	}
-	
-	@SubscribeEvent
-	public void onConfigChanged(OnConfigChangedEvent event)
-	{
-		if (event.getModID().equals(Reference.MOD_ID))
-		{
-			config.syncConfig();
-		}
 	}
 }

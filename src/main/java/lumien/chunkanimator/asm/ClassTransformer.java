@@ -1,48 +1,27 @@
 package lumien.chunkanimator.asm;
 
-import static org.objectweb.asm.Opcodes.ACONST_NULL;
-import static org.objectweb.asm.Opcodes.ALOAD;
-import static org.objectweb.asm.Opcodes.ARETURN;
-import static org.objectweb.asm.Opcodes.DUP;
-import static org.objectweb.asm.Opcodes.GETFIELD;
-import static org.objectweb.asm.Opcodes.GETSTATIC;
-import static org.objectweb.asm.Opcodes.GOTO;
-import static org.objectweb.asm.Opcodes.ICONST_0;
-import static org.objectweb.asm.Opcodes.IFEQ;
-import static org.objectweb.asm.Opcodes.IFGT;
-import static org.objectweb.asm.Opcodes.IFLT;
-import static org.objectweb.asm.Opcodes.IF_ACMPEQ;
-import static org.objectweb.asm.Opcodes.IF_ICMPEQ;
-import static org.objectweb.asm.Opcodes.ILOAD;
 import static org.objectweb.asm.Opcodes.INVOKESTATIC;
-import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
-import static org.objectweb.asm.Opcodes.IRETURN;
-import static org.objectweb.asm.Opcodes.POP;
-import static org.objectweb.asm.Opcodes.PUTSTATIC;
-import static org.objectweb.asm.Opcodes.RETURN;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnList;
-import org.objectweb.asm.tree.InsnNode;
-import org.objectweb.asm.tree.JumpInsnNode;
-import org.objectweb.asm.tree.LabelNode;
-import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
-import net.minecraft.launchwrapper.IClassTransformer;
+import cpw.mods.modlauncher.api.ITransformer;
+import cpw.mods.modlauncher.api.ITransformerVotingContext;
+import cpw.mods.modlauncher.api.TransformerVoteResult;
+import net.minecraftforge.accesstransformer.Target;
 
-public class ClassTransformer implements IClassTransformer
+public class ClassTransformer implements ITransformer<ClassNode>
 {
 	Logger logger = LogManager.getLogger("ChunkAnimatorCore");
 
@@ -53,48 +32,30 @@ public class ClassTransformer implements IClassTransformer
 		logger.log(Level.DEBUG, "Starting Class Transformation");
 	}
 
-	@Override
-	public byte[] transform(String name, String transformedName, byte[] basicClass)
+	private ClassNode patchRenderChunk(ClassNode classNode)
 	{
-		if (transformedName.equals("net.minecraft.client.renderer.ChunkRenderContainer"))
-		{
-			return patchChunkRenderContainer(basicClass);
-		}
-		else if (transformedName.equals("net.minecraft.client.renderer.chunk.RenderChunk"))
-		{
-			return patchRenderChunk(basicClass);
-		}
-
-		return basicClass;
-	}
-
-	private byte[] patchRenderChunk(byte[] basicClass)
-	{
-		ClassNode classNode = new ClassNode();
-		ClassReader classReader = new ClassReader(basicClass);
-		classReader.accept(classNode, 0);
 		logger.log(Level.DEBUG, "Found RenderChunk Class: " + classNode.name);
 
-		MethodNode setOrigin = null;
+		MethodNode setPosition = null;
 
 		for (MethodNode mn : classNode.methods)
 		{
-			if (mn.name.equals(MCPNames.method("func_189562_a")))
+			if (mn.name.equals("setPosition"))
 			{
-				setOrigin = mn;
+				setPosition = mn;
 				break;
 			}
 		}
 
-		if (setOrigin != null)
+		if (setPosition != null)
 		{
 			logger.log(Level.DEBUG, "- Found setOrigin");
 
-			for (int i = 0; i < setOrigin.instructions.size(); i++)
+			for (int i = 0; i < setPosition.instructions.size(); i++)
 			{
 				AbstractInsnNode ain;
 
-				if ((ain = setOrigin.instructions.get(i)) instanceof MethodInsnNode)
+				if ((ain = setPosition.instructions.get(i)) instanceof MethodInsnNode)
 				{
 					MethodInsnNode min = (MethodInsnNode) ain;
 					if (min.name.equals(MCPNames.method("func_178585_h")))
@@ -106,7 +67,7 @@ public class ClassTransformer implements IClassTransformer
 						toInsert.add(new VarInsnNode(Opcodes.ILOAD, 3));
 						toInsert.add(new MethodInsnNode(INVOKESTATIC, asmHandler, "setOrigin", "(Lnet/minecraft/client/renderer/chunk/RenderChunk;III)V", false));
 
-						setOrigin.instructions.insertBefore(min, toInsert);
+						setPosition.instructions.insertBefore(min, toInsert);
 						i+=5;
 					}
 				}
@@ -115,24 +76,18 @@ public class ClassTransformer implements IClassTransformer
 			logger.log(Level.DEBUG, "- Patched setOrigin");
 		}
 
-		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-		classNode.accept(writer);
-
-		return writer.toByteArray();
+		return classNode;
 	}
 
-	private byte[] patchChunkRenderContainer(byte[] basicClass)
+	private ClassNode patchChunkRenderContainer(ClassNode classNode)
 	{
-		ClassNode classNode = new ClassNode();
-		ClassReader classReader = new ClassReader(basicClass);
-		classReader.accept(classNode, 0);
 		logger.log(Level.DEBUG, "Found ChunkRenderContainer Class: " + classNode.name);
 
 		MethodNode preRenderChunk = null;
 
 		for (MethodNode mn : classNode.methods)
 		{
-			if (mn.name.equals(MCPNames.method("func_178003_a")))
+			if (mn.name.equals("preRenderChunk"))
 			{
 				preRenderChunk = mn;
 				break;
@@ -168,22 +123,38 @@ public class ClassTransformer implements IClassTransformer
 			}
 		}
 
-		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-		classNode.accept(writer);
-
-		return writer.toByteArray();
+		return classNode;
 	}
 
-	private byte[] patchDummyClass(byte[] basicClass)
+	@Override
+	public ClassNode transform(ClassNode input, ITransformerVotingContext context)
 	{
-		ClassNode classNode = new ClassNode();
-		ClassReader classReader = new ClassReader(basicClass);
-		classReader.accept(classNode, 0);
-		logger.log(Level.DEBUG, "Found Dummy Class: " + classNode.name);
+		if (input.name.equals("net/minecraft/client/renderer/ChunkRenderContainer"))
+		{
+			return patchChunkRenderContainer(input);
+		}
+		else if (input.name.equals("net/minecraft/client/renderer/chunk/RenderChunk"))
+		{
+			return patchRenderChunk(input);
+		}
+		
+		return null;
+	}
 
-		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-		classNode.accept(writer);
+	@Override
+	public TransformerVoteResult castVote(ITransformerVotingContext context)
+	{
+		return TransformerVoteResult.YES;
+	}
 
-		return writer.toByteArray();
+	@Override
+	public Set<Target> targets()
+	{
+		Set<Target> targets = new LinkedHashSet<Target>();
+		
+		targets.add(Target.targetClass("net.minecraft.client.renderer.ChunkRenderContainer"));
+		targets.add(Target.targetClass("net.minecraft.client.renderer.chunk.RenderChunk"));
+		
+		return targets;
 	}
 }

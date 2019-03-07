@@ -3,6 +3,7 @@ package lumien.chunkanimator.handler;
 import java.util.WeakHashMap;
 
 import lumien.chunkanimator.ChunkAnimator;
+import lumien.chunkanimator.config.ChunkAnimatorConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.chunk.RenderChunk;
@@ -36,7 +37,7 @@ public class AnimationHandler
 		{
 			AnimationData animationData = timeStamps.get(renderChunk);
 			long time = animationData.timeStamp;
-			int mode = ChunkAnimator.INSTANCE.config.getMode();
+			int mode = ChunkAnimatorConfig.mode.get();
 
 			if (time == -1L)
 			{
@@ -47,7 +48,7 @@ public class AnimationHandler
 				// Mode 4 Set Chunk Facing
 				if (mode == 4)
 				{
-					BlockPos zeroedPlayerPosition = Minecraft.getMinecraft().player.getPosition();
+					BlockPos zeroedPlayerPosition = Minecraft.getInstance().player.getPosition();
 					zeroedPlayerPosition = zeroedPlayerPosition.add(0, -zeroedPlayerPosition.getY(), 0);
 
 					BlockPos zeroedCenteredChunkPos = renderChunk.getPosition().add(8, -renderChunk.getPosition().getY(), 8);
@@ -88,7 +89,7 @@ public class AnimationHandler
 
 			long timeDif = System.currentTimeMillis() - time;
 
-			int animationDuration = ChunkAnimator.INSTANCE.config.getAnimationDuration();
+			int animationDuration = ChunkAnimatorConfig.animationDuration.get();
 
 			if (timeDif < animationDuration)
 			{
@@ -97,7 +98,7 @@ public class AnimationHandler
 
 				if (mode == 2)
 				{
-					if (chunkY < Minecraft.getMinecraft().world.provider.getHorizon())
+					if (chunkY < Minecraft.getInstance().world.getHorizon())
 					{
 						mode = 0;
 					}
@@ -115,10 +116,10 @@ public class AnimationHandler
 				switch (mode)
 				{
 					case 0:
-						GlStateManager.translate(0, -chunkY + getFunctionValue(timeDif, 0, chunkY, animationDuration), 0);
+						GlStateManager.translatef(0, -chunkY + getFunctionValue(timeDif, 0, chunkY, animationDuration), 0);
 						break;
 					case 1:
-						GlStateManager.translate(0, 256 - chunkY - getFunctionValue(timeDif, 0, 256 - chunkY, animationDuration), 0);
+						GlStateManager.translatef(0, 256 - chunkY - getFunctionValue(timeDif, 0, 256 - chunkY, animationDuration), 0);
 						break;
 					case 3:
 						EnumFacing chunkFacing = animationData.chunkFacing;
@@ -130,7 +131,7 @@ public class AnimationHandler
 
 							mod = -(200 - getFunctionValue(timeDif, 0, 200, animationDuration));
 
-							GlStateManager.translate(vec.getX() * mod, 0, vec.getZ() * mod);
+							GlStateManager.translated(vec.getX() * mod, 0, vec.getZ() * mod);
 						}
 						break;
 				}
@@ -144,7 +145,7 @@ public class AnimationHandler
 
 	private float getFunctionValue(float t, float b, float c, float d)
 	{
-		switch (ChunkAnimator.INSTANCE.config.getEasingFunction())
+		switch (ChunkAnimatorConfig.easingFunction.get())
 		{
 			case 0: // Linear
 				return Linear.easeOut(t, b, c, d);
@@ -175,14 +176,14 @@ public class AnimationHandler
 
 	public void setOrigin(RenderChunk renderChunk, BlockPos position)
 	{
-		if (Minecraft.getMinecraft().player != null)
+		if (Minecraft.getInstance().player != null)
 		{
 			boolean flag = true;
-			BlockPos zeroedPlayerPosition = Minecraft.getMinecraft().player.getPosition();
+			BlockPos zeroedPlayerPosition = Minecraft.getInstance().player.getPosition();
 			zeroedPlayerPosition = zeroedPlayerPosition.add(0, -zeroedPlayerPosition.getY(), 0);
 			BlockPos zeroedCenteredChunkPos = position.add(8, -position.getY(), 8);
 
-			if (ChunkAnimator.INSTANCE.config.disableAroundPlayer())
+			if (ChunkAnimatorConfig.disableAroundPlayer.get())
 			{
 				flag = zeroedPlayerPosition.distanceSq(zeroedCenteredChunkPos) > (64 * 64);
 			}
@@ -191,7 +192,7 @@ public class AnimationHandler
 			{
 				EnumFacing chunkFacing = null;
 
-				if (ChunkAnimator.INSTANCE.config.getMode() == 3)
+				if (ChunkAnimatorConfig.mode.get() == 3)
 				{
 					Vec3i dif = zeroedPlayerPosition.subtract(zeroedCenteredChunkPos);
 
