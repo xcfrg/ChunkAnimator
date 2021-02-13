@@ -18,32 +18,42 @@ group = "lumien.chunkanimator" // http://maven.apache.org/guides/mini/guide-nami
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
-archivesBaseName = "ChunkAnimator-MC1.13.2"
+archivesBaseName = "ChunkAnimator-MC1.16.5"
 
 minecraft {
-    mappings channel: 'snapshot', version: '20180921-1.13'
+    mappings channel: 'snapshot', version: '20201028-1.16.3'
 	runs {
-        client = {
+        client {
+            workingDirectory project.file('run')
             // recommended logging data for a userdev environment
             properties 'forge.logging.markers': 'SCAN,REGISTRIES,REGISTRYDUMP'
             // recommended logging level for the console
             properties 'forge.logging.console.level': 'debug'
             workingDirectory project.file('run').canonicalPath
-            source sourceSets.main
+            mods {
+                chunkanimator {
+                    source sourceSets.main
+                }
+            }
         }
-        server = {
+        server {
+            workingDirectory project.file('run')
             // recommended logging data for a userdev environment
             properties 'forge.logging.markers': 'SCAN,REGISTRIES,REGISTRYDUMP'
             // recommended logging level for the console
             properties 'forge.logging.console.level': 'debug'
             workingDirectory project.file('run').canonicalPath
-            source sourceSets.main
+            mods {
+                chunkanimator {
+                    source sourceSets.main
+                }
+            }
         }
     }
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.13.2-25.0.70'
+    minecraft 'net.minecraftforge:forge:1.16.5-36.0.22'
 
     // the deobf configurations:  'deobfCompile' and 'deobfProvided' are the same as the normal compile and provided,
     // except that these dependencies get remapped to your current MCP mappings

@@ -1,3 +1,5 @@
+license="MIT"
+
 modLoader="javafml" #mandatory
 
 loaderVersion="[24,)" #mandatory (24 is current forge version)
@@ -18,3 +20,17 @@ displayName="Chunk Animator" #mandatory
 description='''
 A small client side mod that animates the appeareance of chunks so that they don't just instantly appear
 '''
+
+[[dependencies.chunkanimator]]
+    modId="forge"
+    mandatory=true
+    versionRange="[36,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.chunkanimator]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.16.5]"
+    ordering="NONE"
+    side="BOTH"

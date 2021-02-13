@@ -1,37 +1,26 @@
 package lumien.chunkanimator.handler;
 
-import java.util.WeakHashMap;
-
-import lumien.chunkanimator.ChunkAnimator;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import lumien.chunkanimator.config.ChunkAnimatorConfig;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.chunk.RenderChunk;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
-import penner.easing.Back;
-import penner.easing.Bounce;
-import penner.easing.Circ;
-import penner.easing.Cubic;
-import penner.easing.Elastic;
-import penner.easing.Expo;
-import penner.easing.Linear;
-import penner.easing.Quad;
-import penner.easing.Quart;
-import penner.easing.Quint;
-import penner.easing.Sine;
+import net.minecraft.util.math.vector.Vector3i;
+import penner.easing.*;
+
+import java.util.WeakHashMap;
 
 public class AnimationHandler
 {
-	WeakHashMap<RenderChunk, AnimationData> timeStamps;
+	WeakHashMap<ChunkRenderDispatcher.ChunkRender, AnimationData> timeStamps;
 
 	public AnimationHandler()
 	{
-		timeStamps = new WeakHashMap<RenderChunk, AnimationData>();
+		timeStamps = new WeakHashMap<>();
 	}
 
-	public void preRender(RenderChunk renderChunk)
+	public void preRender(ChunkRenderDispatcher.ChunkRender renderChunk, MatrixStack matrixStack)
 	{
 		if (timeStamps.containsKey(renderChunk))
 		{
@@ -53,33 +42,33 @@ public class AnimationHandler
 
 					BlockPos zeroedCenteredChunkPos = renderChunk.getPosition().add(8, -renderChunk.getPosition().getY(), 8);
 
-					Vec3i dif = zeroedPlayerPosition.subtract(zeroedCenteredChunkPos);
+					Vector3i dif = zeroedPlayerPosition.subtract(zeroedCenteredChunkPos);
 
 					int difX = Math.abs(dif.getX());
 					int difZ = Math.abs(dif.getZ());
 
-					EnumFacing chunkFacing;
+					Direction chunkFacing;
 
 					if (difX > difZ)
 					{
 						if (dif.getX() > 0)
 						{
-							chunkFacing = EnumFacing.EAST;
+							chunkFacing = Direction.EAST;
 						}
 						else
 						{
-							chunkFacing = EnumFacing.WEST;
+							chunkFacing = Direction.WEST;
 						}
 					}
 					else
 					{
 						if (dif.getZ() > 0)
 						{
-							chunkFacing = EnumFacing.SOUTH;
+							chunkFacing = Direction.SOUTH;
 						}
 						else
 						{
-							chunkFacing = EnumFacing.NORTH;
+							chunkFacing = Direction.NORTH;
 						}
 					}
 
@@ -98,7 +87,7 @@ public class AnimationHandler
 
 				if (mode == 2)
 				{
-					if (chunkY < Minecraft.getInstance().world.getHorizon())
+					if (chunkY < Minecraft.getInstance().world.getWorldInfo().getVoidFogHeight())
 					{
 						mode = 0;
 					}
@@ -116,22 +105,22 @@ public class AnimationHandler
 				switch (mode)
 				{
 					case 0:
-						GlStateManager.translatef(0, -chunkY + getFunctionValue(timeDif, 0, chunkY, animationDuration), 0);
+						matrixStack.translate(0, -chunkY + getFunctionValue(timeDif, 0, chunkY, animationDuration), 0);
 						break;
 					case 1:
-						GlStateManager.translatef(0, 256 - chunkY - getFunctionValue(timeDif, 0, 256 - chunkY, animationDuration), 0);
+						matrixStack.translate(0, 256 - chunkY - getFunctionValue(timeDif, 0, 256 - chunkY, animationDuration), 0);
 						break;
 					case 3:
-						EnumFacing chunkFacing = animationData.chunkFacing;
+						Direction chunkFacing = animationData.chunkFacing;
 
 						if (chunkFacing != null)
 						{
-							Vec3i vec = chunkFacing.getDirectionVec();
+							Vector3i vec = chunkFacing.getDirectionVec();
 							double mod = -(200D - (200D / animationDuration * timeDif));
 
 							mod = -(200 - getFunctionValue(timeDif, 0, 200, animationDuration));
 
-							GlStateManager.translated(vec.getX() * mod, 0, vec.getZ() * mod);
+							matrixStack.translate(vec.getX() * mod, 0, vec.getZ() * mod);
 						}
 						break;
 				}
@@ -174,7 +163,7 @@ public class AnimationHandler
 		return Sine.easeOut(t, b, c, d);
 	}
 
-	public void setOrigin(RenderChunk renderChunk, BlockPos position)
+	public void setOrigin(ChunkRenderDispatcher.ChunkRender renderChunk, BlockPos position)
 	{
 		if (Minecraft.getInstance().player != null)
 		{
@@ -190,11 +179,11 @@ public class AnimationHandler
 
 			if (flag)
 			{
-				EnumFacing chunkFacing = null;
+				Direction chunkFacing = null;
 
 				if (ChunkAnimatorConfig.mode.get() == 3)
 				{
-					Vec3i dif = zeroedPlayerPosition.subtract(zeroedCenteredChunkPos);
+					Vector3i dif = zeroedPlayerPosition.subtract(zeroedCenteredChunkPos);
 
 					int difX = Math.abs(dif.getX());
 					int difZ = Math.abs(dif.getZ());
@@ -203,22 +192,22 @@ public class AnimationHandler
 					{
 						if (dif.getX() > 0)
 						{
-							chunkFacing = EnumFacing.EAST;
+							chunkFacing = Direction.EAST;
 						}
 						else
 						{
-							chunkFacing = EnumFacing.WEST;
+							chunkFacing = Direction.WEST;
 						}
 					}
 					else
 					{
 						if (dif.getZ() > 0)
 						{
-							chunkFacing = EnumFacing.SOUTH;
+							chunkFacing = Direction.SOUTH;
 						}
 						else
 						{
-							chunkFacing = EnumFacing.NORTH;
+							chunkFacing = Direction.NORTH;
 						}
 					}
 				}
@@ -228,22 +217,19 @@ public class AnimationHandler
 			}
 			else
 			{
-				if (timeStamps.containsKey(renderChunk))
-				{
-					timeStamps.remove(renderChunk);
-				}
+				timeStamps.remove(renderChunk);
 			}
 		}
 
 	}
 
-	private class AnimationData
+	private static class AnimationData
 	{
 		public long timeStamp;
 
-		public EnumFacing chunkFacing;
+		public Direction chunkFacing;
 
-		public AnimationData(long timeStamp, EnumFacing chunkFacing)
+		public AnimationData(long timeStamp, Direction chunkFacing)
 		{
 			this.timeStamp = timeStamp;
 			this.chunkFacing = chunkFacing;

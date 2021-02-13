@@ -3,7 +3,7 @@ function initializeCoreMod() {
         'coremodone': {
             'target': {
                 'type': 'CLASS',
-                'name': 'net.minecraft.client.renderer.ChunkRenderContainer'
+                'name': 'net.minecraft.client.renderer.chunk.ChunkRenderDispatcher$ChunkRender'
             },
             'transformer': function (classNode) {
             	var asmHandler = "lumien/chunkanimator/handler/AsmHandler";
@@ -20,17 +20,20 @@ function initializeCoreMod() {
                 for (m in methods) 
                 {
                     var method = methods[m];
-                    if (method.name === "preRenderChunk" || method.name === "func_178003_a") 
+                    if (method.name === "setPosition" || method.name === "func_189562_a") 
                     {
                         var code = method.instructions;
                         var instr = code.toArray();
                         for (t in instr) 
                         {
                             var instruction = instr[t];
-                            if (instruction instanceof MethodInsnNode && (instruction.name === "translatef" || instruction.name === "func_179109_b")) 
+                            if (instruction instanceof MethodInsnNode && (instruction.name === "stopCompileTask" || instruction.name === "func_178585_h")) 
                             {
-                            	code.insertBefore(instruction, new VarInsnNode(Opcodes.ALOAD, 1));
-                            	code.insertBefore(instruction, new MethodInsnNode(Opcodes.INVOKESTATIC, asmHandler, "preRenderChunk", "(Lnet/minecraft/client/renderer/chunk/RenderChunk;)V", false));
+                            	code.insertBefore(instruction, new VarInsnNode(Opcodes.ALOAD, 0));
+                            	code.insertBefore(instruction, new VarInsnNode(Opcodes.ILOAD, 1));
+                            	code.insertBefore(instruction, new VarInsnNode(Opcodes.ILOAD, 2));
+                            	code.insertBefore(instruction, new VarInsnNode(Opcodes.ILOAD, 3));
+                            	code.insertBefore(instruction, new MethodInsnNode(Opcodes.INVOKESTATIC, asmHandler, "setOrigin", "(Lnet/minecraft/client/renderer/chunk/ChunkRenderDispatcher$ChunkRender;III)V", false));
         						break;
                             }
                         }
