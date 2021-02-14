@@ -27,15 +27,22 @@ function initializeCoreMod() {
                         for (t in instr) 
                         {
                             var instruction = instr[t];
-                            if (instruction instanceof MethodInsnNode && (instruction.name === "translate" || instruction.name === "func_227861_a_"))
+                            if (instruction instanceof MethodInsnNode && (instruction.name === "translate" || instruction.name === "func_227861_a_" || instruction.name === "translated" || instruction.name === "func_227670_b_"))
                             {
-                            	code.insertBefore(instruction, new VarInsnNode(Opcodes.ALOAD, 12));
-                            	code.insertBefore(instruction, new VarInsnNode(Opcodes.ALOAD, 2));
-                            	code.insertBefore(instruction, new MethodInsnNode(Opcodes.INVOKESTATIC, asmHandler, "preRenderChunk", "(Lnet/minecraft/client/renderer/chunk/ChunkRenderDispatcher$ChunkRender;Lcom/mojang/blaze3d/matrix/MatrixStack;)V", false));
-        						break;
+                                // OptiFine uses GlStateManger.translated instead of MatrixStack.translate
+                                var optifine = instruction.name === "translated" || instruction.name === "func_227670_b_";
+
+                            	code.insertBefore(instruction, new VarInsnNode(Opcodes.ALOAD, optifine ? 14 : 12));
+
+                            	if (!optifine) {
+                                    code.insertBefore(instruction, new VarInsnNode(Opcodes.ALOAD, 2));
+                                    code.insertBefore(instruction, new MethodInsnNode(Opcodes.INVOKESTATIC, asmHandler, "preRenderChunk", "(Lnet/minecraft/client/renderer/chunk/ChunkRenderDispatcher$ChunkRender;Lcom/mojang/blaze3d/matrix/MatrixStack;)V", false));
+                                } else {
+                                    code.insertBefore(instruction, new MethodInsnNode(Opcodes.INVOKESTATIC, asmHandler, "preRenderChunk", "(Lnet/minecraft/client/renderer/chunk/ChunkRenderDispatcher$ChunkRender;)V", false));
+                                }
+
                             }
                         }
-                        break;
                     }
                 }
 

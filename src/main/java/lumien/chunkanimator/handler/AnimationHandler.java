@@ -1,6 +1,7 @@
 package lumien.chunkanimator.handler;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.GlStateManager;
 import lumien.chunkanimator.config.ChunkAnimatorConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
@@ -20,6 +21,7 @@ public class AnimationHandler
 		timeStamps = new WeakHashMap<>();
 	}
 
+	@SuppressWarnings("deprecation") // OptiFine doesn't give us a choice in using GlStateManager.translated
 	public void preRender(ChunkRenderDispatcher.ChunkRender renderChunk, MatrixStack matrixStack)
 	{
 		if (timeStamps.containsKey(renderChunk))
@@ -102,13 +104,21 @@ public class AnimationHandler
 					mode = 3;
 				}
 
-				switch (mode)
-				{
+				switch (mode) {
 					case 0:
-						matrixStack.translate(0, -chunkY + getFunctionValue(timeDif, 0, chunkY, animationDuration), 0);
+						// OptiFine uses GlStateManger instead of MatrixStack, so if OptiFine is enabled we set matrix stack to null and use that instead.
+						if (matrixStack == null) {
+							GlStateManager.translated(0, -chunkY + getFunctionValue(timeDif, 0, chunkY, animationDuration), 0);
+						} else {
+							matrixStack.translate(0, -chunkY + getFunctionValue(timeDif, 0, chunkY, animationDuration), 0);
+						}
 						break;
 					case 1:
-						matrixStack.translate(0, 256 - chunkY - getFunctionValue(timeDif, 0, 256 - chunkY, animationDuration), 0);
+						if (matrixStack == null) {
+							GlStateManager.translated(0, 256 - chunkY - getFunctionValue(timeDif, 0, 256 - chunkY, animationDuration), 0);
+						} else {
+							matrixStack.translate(0, 256 - chunkY - getFunctionValue(timeDif, 0, 256 - chunkY, animationDuration), 0);
+						}
 						break;
 					case 3:
 						Direction chunkFacing = animationData.chunkFacing;
@@ -120,7 +130,11 @@ public class AnimationHandler
 
 							mod = -(200 - getFunctionValue(timeDif, 0, 200, animationDuration));
 
-							matrixStack.translate(vec.getX() * mod, 0, vec.getZ() * mod);
+							if (matrixStack == null) {
+								GlStateManager.translated(vec.getX() * mod, 0, vec.getZ() * mod);
+							} else {
+								matrixStack.translate(vec.getX() * mod, 0, vec.getZ() * mod);
+							}
 						}
 						break;
 				}
