@@ -10,6 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3i;
 import penner.easing.*;
 
+import javax.annotation.Nullable;
 import java.util.WeakHashMap;
 
 public class AnimationHandler
@@ -21,8 +22,7 @@ public class AnimationHandler
 		timeStamps = new WeakHashMap<>();
 	}
 
-	@SuppressWarnings("deprecation") // OptiFine doesn't give us a choice in using GlStateManager.translated
-	public void preRender(ChunkRenderDispatcher.ChunkRender renderChunk, MatrixStack matrixStack)
+	public void preRender(ChunkRenderDispatcher.ChunkRender renderChunk, @Nullable MatrixStack matrixStack)
 	{
 		if (timeStamps.containsKey(renderChunk))
 		{
@@ -106,19 +106,10 @@ public class AnimationHandler
 
 				switch (mode) {
 					case 0:
-						// OptiFine uses GlStateManger instead of MatrixStack, so if OptiFine is enabled we set matrix stack to null and use that instead.
-						if (matrixStack == null) {
-							GlStateManager.translated(0, -chunkY + getFunctionValue(timeDif, 0, chunkY, animationDuration), 0);
-						} else {
-							matrixStack.translate(0, -chunkY + getFunctionValue(timeDif, 0, chunkY, animationDuration), 0);
-						}
+						this.translate(matrixStack, 0, -chunkY + getFunctionValue(timeDif, 0, chunkY, animationDuration), 0);
 						break;
 					case 1:
-						if (matrixStack == null) {
-							GlStateManager.translated(0, 256 - chunkY - getFunctionValue(timeDif, 0, 256 - chunkY, animationDuration), 0);
-						} else {
-							matrixStack.translate(0, 256 - chunkY - getFunctionValue(timeDif, 0, 256 - chunkY, animationDuration), 0);
-						}
+						this.translate(matrixStack, 0, 256 - chunkY - getFunctionValue(timeDif, 0, 256 - chunkY, animationDuration), 0);
 						break;
 					case 3:
 						Direction chunkFacing = animationData.chunkFacing;
@@ -130,11 +121,7 @@ public class AnimationHandler
 
 							mod = -(200 - getFunctionValue(timeDif, 0, 200, animationDuration));
 
-							if (matrixStack == null) {
-								GlStateManager.translated(vec.getX() * mod, 0, vec.getZ() * mod);
-							} else {
-								matrixStack.translate(vec.getX() * mod, 0, vec.getZ() * mod);
-							}
+							this.translate(matrixStack, vec.getX() * mod, 0, vec.getZ() * mod);
 						}
 						break;
 				}
@@ -143,6 +130,16 @@ public class AnimationHandler
 			{
 				timeStamps.remove(renderChunk);
 			}
+		}
+	}
+
+	@SuppressWarnings("deprecation") // OptiFine doesn't give us a choice in using GlStateManager.translated
+	private void translate (@Nullable MatrixStack matrixStack, double x, double y, double z) {
+		// OptiFine uses GlStateManger instead of MatrixStack, so if OptiFine is enabled we set matrix stack to null and use that instead.
+		if (matrixStack == null) {
+			GlStateManager.translated(x, y, z);
+		} else {
+			matrixStack.translate(x, y, z);
 		}
 	}
 

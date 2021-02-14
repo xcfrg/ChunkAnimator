@@ -15,6 +15,13 @@ function initializeCoreMod() {
 
                 var api = Java.type('net.minecraftforge.coremod.api.ASMAPI');
 
+                var translatedMethod = "translated";
+                var translatedMethodObf = "func_227670_b_";
+                var preRenderChunkMethod = "preRenderChunk";
+
+                var chunkRenderParam = "Lnet/minecraft/client/renderer/chunk/ChunkRenderDispatcher$ChunkRender";
+                var matrixStackParam = "Lcom/mojang/blaze3d/matrix/MatrixStack";
+
                 var methods = classNode.methods;
 
                 for (m in methods) 
@@ -27,20 +34,18 @@ function initializeCoreMod() {
                         for (t in instr) 
                         {
                             var instruction = instr[t];
-                            if (instruction instanceof MethodInsnNode && (instruction.name === "translate" || instruction.name === "func_227861_a_" || instruction.name === "translated" || instruction.name === "func_227670_b_"))
+                            if (instruction instanceof MethodInsnNode && (instruction.name === "translate" || instruction.name === "func_227861_a_" || instruction.name === translatedMethod || instruction.name === translatedMethodObf))
                             {
                                 // OptiFine uses GlStateManger.translated instead of MatrixStack.translate
-                                var optifine = instruction.name === "translated" || instruction.name === "func_227670_b_";
+                                var optifine = instruction.name === translatedMethod || instruction.name === translatedMethodObf;
 
                             	code.insertBefore(instruction, new VarInsnNode(Opcodes.ALOAD, optifine ? 14 : 12));
 
                             	if (!optifine) {
                                     code.insertBefore(instruction, new VarInsnNode(Opcodes.ALOAD, 2));
-                                    code.insertBefore(instruction, new MethodInsnNode(Opcodes.INVOKESTATIC, asmHandler, "preRenderChunk", "(Lnet/minecraft/client/renderer/chunk/ChunkRenderDispatcher$ChunkRender;Lcom/mojang/blaze3d/matrix/MatrixStack;)V", false));
-                                } else {
-                                    code.insertBefore(instruction, new MethodInsnNode(Opcodes.INVOKESTATIC, asmHandler, "preRenderChunk", "(Lnet/minecraft/client/renderer/chunk/ChunkRenderDispatcher$ChunkRender;)V", false));
                                 }
 
+                                code.insertBefore(instruction, new MethodInsnNode(Opcodes.INVOKESTATIC, asmHandler, preRenderChunkMethod, "(" + chunkRenderParam + (!optifine ? ";" + matrixStackParam : "") + ";)V", false));
                             }
                         }
                     }
