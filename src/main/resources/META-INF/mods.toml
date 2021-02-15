@@ -2,12 +2,13 @@ license="MIT"
 
 modLoader="javafml" #mandatory
 
-loaderVersion="[24,)" #mandatory (24 is current forge version)
+loaderVersion="[35,)" #mandatory
 issueTrackerURL="https://github.com/lumien231/Chunk-Animator" #optional
 
 displayURL="https://minecraft.curseforge.com/projects/chunk-animator" #optional
 
 authors="Lumien" #optional
+credits="Harley O'Connor for this 1.16 Port"
 
 [[mods]] #mandatory
 
@@ -24,13 +25,13 @@ A small client side mod that animates the appeareance of chunks so that they don
 [[dependencies.chunkanimator]]
     modId="forge"
     mandatory=true
-    versionRange="[36,)"
+    versionRange="[35,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.chunkanimator]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.5]"
+    versionRange="[1.16.4,)"
     ordering="NONE"
     side="BOTH"
