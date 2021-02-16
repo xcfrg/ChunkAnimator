@@ -8,8 +8,7 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
-public class ChunkAnimatorConfig
-{
+public class ChunkAnimatorConfig {
 
 	// Animation Mode
 	public static IntValue mode;
@@ -23,8 +22,7 @@ public class ChunkAnimatorConfig
 	// Disable Around Player
 	public static BooleanValue disableAroundPlayer;
 
-	public ChunkAnimatorConfig(ForgeConfigSpec.Builder builder)
-	{
+	public ChunkAnimatorConfig(ForgeConfigSpec.Builder builder) {
 		mode = builder.comment("How should the chunks be animated?\\n 0: Chunks always appear from below\\n 1: Chunks always appear from above\\n " +
 				"2: Chunks appear from below if they are lower than the Horizon and from above if they are higher than the Horizon\\n " +
 				"3: Chunks \\\"slide in\\\" from their respective cardinal direction (Relative to the Player)\\n " +
@@ -43,20 +41,17 @@ public class ChunkAnimatorConfig
 				.define("disableAroundPlayer", false);
 	}
 
-	public void preInit(FMLCommonSetupEvent event)
-	{
+	public void preInit(FMLCommonSetupEvent event) {
 		
 	}
 	
     @SubscribeEvent
-    public static void onLoad(final ModConfig.Loading configEvent) 
-    {
+    public static void onLoad(final ModConfig.Loading configEvent) {
 
     }
 
     @SubscribeEvent
-    public static void onFileChange(final ModConfig.Reloading configEvent)
-    {
+    public static void onFileChange(final ModConfig.Reloading configEvent) {
 
     }
 	

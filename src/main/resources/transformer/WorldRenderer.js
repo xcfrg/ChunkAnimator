@@ -15,8 +15,6 @@ function initializeCoreMod() {
 
                 var api = Java.type('net.minecraftforge.coremod.api.ASMAPI');
 
-                var translatedMethod = "translated";
-                var translatedMethodObf = "func_227670_b_";
                 var preRenderChunkMethod = "preRenderChunk";
 
                 var chunkRenderParam = "Lnet/minecraft/client/renderer/chunk/ChunkRenderDispatcher$ChunkRender";
@@ -24,21 +22,18 @@ function initializeCoreMod() {
 
                 var methods = classNode.methods;
 
-                for (m in methods) 
-                {
+                for (m in methods) {
                     var method = methods[m];
-                    if (method.name === "renderBlockLayer" || method.name === "func_228441_a_")
-                    {
+                    if (method.name === "renderBlockLayer" || method.name === "func_228441_a_") {
                         var code = method.instructions;
                         var instr = code.toArray();
-                        for (t in instr) 
-                        {
+                        for (t in instr) {
                             var instruction = instr[t];
-                            if (instruction instanceof MethodInsnNode && (instruction.name === "translate" || instruction.name === "func_227861_a_" || instruction.name === translatedMethod || instruction.name === translatedMethodObf))
-                            {
-                                // OptiFine uses GlStateManger.translated instead of MatrixStack.translate
-                                var optifine = instruction.name === translatedMethod || instruction.name === translatedMethodObf;
 
+                            // This will be true if OptiFine is loaded, and the current instruction is GlStateManager.translated (OptiFine uses this instead of MatrixStack.translate).
+                            var optifine = instruction.name === "translated" || instruction.name === "func_227670_b_";
+
+                            if (instruction instanceof MethodInsnNode && (instruction.name === "translate" || instruction.name === "func_227861_a_" || optifine)) {
                             	code.insertBefore(instruction, new VarInsnNode(Opcodes.ALOAD, optifine ? 14 : 12));
 
                             	if (!optifine) {

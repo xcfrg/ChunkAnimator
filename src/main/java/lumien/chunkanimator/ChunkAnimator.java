@@ -10,16 +10,15 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod(Reference.MOD_ID)
-public class ChunkAnimator
-{
+public class ChunkAnimator {
+
 	public static ChunkAnimator INSTANCE;
 	
 	public AnimationHandler animationHandler;
 	
 	public ChunkAnimatorConfig config;
 	
-	public ChunkAnimator()
-	{
+	public ChunkAnimator() {
 		INSTANCE = this;
 		
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -29,4 +28,5 @@ public class ChunkAnimator
 		
 		animationHandler = new AnimationHandler();
 	}
+
 }

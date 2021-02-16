@@ -17,18 +17,14 @@ function initializeCoreMod() {
 
                 var methods = classNode.methods;
 
-                for (m in methods) 
-                {
+                for (m in methods) {
                     var method = methods[m];
-                    if (method.name === "setPosition" || method.name === "func_189562_a") 
-                    {
+                    if (method.name === "setPosition" || method.name === "func_189562_a") {
                         var code = method.instructions;
                         var instr = code.toArray();
-                        for (t in instr) 
-                        {
+                        for (t in instr) {
                             var instruction = instr[t];
-                            if (instruction instanceof MethodInsnNode && (instruction.name === "stopCompileTask" || instruction.name === "func_178585_h")) 
-                            {
+                            if (instruction instanceof MethodInsnNode && (instruction.name === "stopCompileTask" || instruction.name === "func_178585_h")) {
                             	code.insertBefore(instruction, new VarInsnNode(Opcodes.ALOAD, 0));
                             	code.insertBefore(instruction, new VarInsnNode(Opcodes.ILOAD, 1));
                             	code.insertBefore(instruction, new VarInsnNode(Opcodes.ILOAD, 2));
