@@ -1,26 +1,25 @@
+modLoader="javafml"
+loaderVersion="[35,)"
+
+issueTrackerURL="https://github.com/Harleyoc1/ChunkAnimator/issues"
+
 license="MIT"
 
-modLoader="javafml" #mandatory
+[[mods]]
 
-loaderVersion="[35,)" #mandatory
-issueTrackerURL="https://github.com/lumien231/Chunk-Animator" #optional
+displayName="Chunk Animator"
+modId="chunkanimator"
+version="${file.jarVersion}"
 
-displayURL="https://minecraft.curseforge.com/projects/chunk-animator" #optional
-
-authors="Lumien" #optional
-credits="Harley O'Connor for this 1.16 Port"
-
-[[mods]] #mandatory
-
-modId="chunkanimator" #mandatory
-
-version="1.2" #mandatory
-
-displayName="Chunk Animator" #mandatory
+authors="Lumien"
+credits="Harley O'Connor for this port"
 
 description='''
-A small client side mod that animates the appeareance of chunks so that they don't just instantly appear
+A small client side mod that animates the appeareance of chunks so that they don't just instantly appear.
 '''
+
+displayURL="https://minecraft.curseforge.com/projects/chunkanimator"
+updateJSONURL="https://github.com/Harleyoc1/ChunkAnimator/blob/1.16.5/version_info.json?raw=true"
 
 [[dependencies.chunkanimator]]
     modId="forge"

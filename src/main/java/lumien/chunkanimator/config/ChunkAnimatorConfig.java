@@ -25,10 +25,22 @@ public class ChunkAnimatorConfig
 
 	public ChunkAnimatorConfig(ForgeConfigSpec.Builder builder)
 	{
-		mode = builder.comment("How should the chunks be animated?\\n 0: Chunks always appear from below\\n 1: Chunks always appear from above\\n 2: Chunks appear from below if they are lower than the Horizon and from above if they are higher than the Horizon\\n 3: Chunks \\\"slide in\\\" from their respective cardinal direction (Relative to the Player)\\n 4: Same as 3 but the cardinal direction of a chunk is determined slightly different (Just try both :D)").defineInRange("mode", 0, 0, 4);
-		easingFunction = builder.comment("The function that should be used to control the movement of chunks in ALL animation modes\\nIf you want a visual comparison there is a link on the curseforge page\\n0: Linear, 1: Quadratic, 2: Cubic, 3: Quartic, 4: Quintic, 5: Expo, 6: Sin, 7: Circle, 8: Back, 9: Bounce, 10: Elastic").defineInRange("easingFunction", 6, 0, 10);
-		animationDuration = builder.comment("How long should the animation last? (In milliseconds)").defineInRange("animationDuration", 1000, 0, Integer.MAX_VALUE);
-		disableAroundPlayer = builder.comment("If enabled chunks that are next to the player will not animate").define("disableAroundPlayer", false);
+		mode = builder.comment("How should the chunks be animated?\\n 0: Chunks always appear from below\\n 1: Chunks always appear from above\\n " +
+				"2: Chunks appear from below if they are lower than the Horizon and from above if they are higher than the Horizon\\n " +
+				"3: Chunks \\\"slide in\\\" from their respective cardinal direction (Relative to the Player)\\n " +
+				"4: Same as 3 but the cardinal direction of a chunk is determined slightly different (Just try both :D)")
+				.defineInRange("mode", 0, 0, 4);
+
+		easingFunction = builder.comment("The function that should be used to control the movement of chunks in ALL animation modes\\n" +
+				"If you want a visual comparison there is a link on the curseforge page\\n0: " +
+				"Linear, 1: Quadratic, 2: Cubic, 3: Quartic, 4: Quintic, 5: Expo, 6: Sin, 7: Circle, 8: Back, 9: Bounce, 10: Elastic")
+				.defineInRange("easingFunction", 6, 0, 10);
+
+		animationDuration = builder.comment("How long should the animation last? (In milliseconds)")
+				.defineInRange("animationDuration", 1000, 0, Integer.MAX_VALUE);
+
+		disableAroundPlayer = builder.comment("If enabled chunks that are next to the player will not animate")
+				.define("disableAroundPlayer", false);
 	}
 
 	public void preInit(FMLCommonSetupEvent event)
@@ -50,9 +62,11 @@ public class ChunkAnimatorConfig
 	
 	public static final ForgeConfigSpec spec;
     public static final ChunkAnimatorConfig CONFIG;
+
     static {
         final Pair<ChunkAnimatorConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ChunkAnimatorConfig::new);
         spec = specPair.getRight();
         CONFIG = specPair.getLeft();
     }
+
 }
