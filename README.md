@@ -10,6 +10,8 @@ Once you install this mod it will be in mode 0, that means that all chunks will 
 
 You can also change the easing function that is used in the animation, [this](https://easings.net) is a website where you can compare them.
 
+To learn more about how the animations can be configured, visit [this page](https://github.com/Harleyoc1/ChunkAnimator/wiki/Config) on the config.
+
 ## OptiFine
 OptiFine is supported, however for the chunks to be animated you will need to make sure the `render regions` option is disabled (set to `false`). This can be found under the Performance screen in Video Settings, or as `ofRenderRegions` in the `optionsof.txt` in your Minecraft directory.
 
