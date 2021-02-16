@@ -1,0 +1,10 @@
+{
+  "homepage": "https://www.curseforge.com/minecraft/mc-mods/chunkanimator",
+  "1.16.5": {
+    "1.16.5-1.2.0": "Initial release for 1.16.5(/4)."
+  },
+  "promos": {
+    "1.16.5-latest": "1.16.5-1.2.0",
+    "1.16.5-recommended": "1.16.5-1.2.0"
+  }
+}
