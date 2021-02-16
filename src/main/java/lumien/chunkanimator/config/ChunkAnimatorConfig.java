@@ -3,9 +3,6 @@ package lumien.chunkanimator.config;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.IntValue;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class ChunkAnimatorConfig {
@@ -21,6 +18,15 @@ public class ChunkAnimatorConfig {
 	
 	// Disable Around Player
 	public static BooleanValue disableAroundPlayer;
+
+	public static final ForgeConfigSpec spec;
+	public static final ChunkAnimatorConfig CONFIG;
+
+	static {
+		final Pair<ChunkAnimatorConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ChunkAnimatorConfig::new);
+		spec = specPair.getRight();
+		CONFIG = specPair.getLeft();
+	}
 
 	public ChunkAnimatorConfig(ForgeConfigSpec.Builder builder) {
 		mode = builder.comment("How should the chunks be animated?\\n 0: Chunks always appear from below\\n 1: Chunks always appear from above\\n " +
@@ -40,28 +46,5 @@ public class ChunkAnimatorConfig {
 		disableAroundPlayer = builder.comment("If enabled chunks that are next to the player will not animate")
 				.define("disableAroundPlayer", false);
 	}
-
-	public void preInit(FMLCommonSetupEvent event) {
-		
-	}
-	
-    @SubscribeEvent
-    public static void onLoad(final ModConfig.Loading configEvent) {
-
-    }
-
-    @SubscribeEvent
-    public static void onFileChange(final ModConfig.Reloading configEvent) {
-
-    }
-	
-	public static final ForgeConfigSpec spec;
-    public static final ChunkAnimatorConfig CONFIG;
-
-    static {
-        final Pair<ChunkAnimatorConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ChunkAnimatorConfig::new);
-        spec = specPair.getRight();
-        CONFIG = specPair.getLeft();
-    }
 
 }
