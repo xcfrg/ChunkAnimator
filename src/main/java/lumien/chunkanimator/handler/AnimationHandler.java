@@ -53,14 +53,15 @@ public class AnimationHandler {
 
 		if (timeDif < animationDuration) {
 			int chunkY = renderChunk.getPosition().getY();
+			double voidFogHeight = this.mc.world != null ? this.mc.world.getWorldInfo().getVoidFogHeight() : 63;
 
-			mode = mode == 2 ? (this.mc.world != null && chunkY < this.mc.world.getWorldInfo().getVoidFogHeight() ? 0 : 1) : mode;
+			mode = mode == 2 ? (chunkY < voidFogHeight ? 0 : 1) : mode;
 
 			if (mode == 4)
 				mode = 3;
 
-			// If the chunkY is 0, use mode 1 instead of 0 so we actually get some animation in flat worlds.
-			if (mode == 0 && chunkY == 0)
+			// If the world is flat (fog height is 0), use mode 1 instead of 0 so we actually get some animation in flat worlds.
+			if (mode == 0 && voidFogHeight == 0)
 				mode = 1;
 
 			switch (mode) {
