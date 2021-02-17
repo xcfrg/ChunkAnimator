@@ -19,6 +19,6 @@ OptiFine is supported, however for the chunks to be animated you will need to ma
 If you find any bugs or have an idea for a new feature, please [open a new issue](https://github.com/Harleyoc1/ChunkAnimator/issues/new/choose) using the relevant template. For any other discussion or support, please use the [Discussions tab](https://github.com/Harleyoc1/ChunkAnimator/discussions).
 
 <div id ="original-project">
-    <h2>The Original Project <a href="https://www.curseforge.com/minecraft/mc-mods/chunk-animator/"><img src="http://cf.way2muchnoise.eu/versions/chunk-animator.svg" /><img src="http://cf.way2muchnoise.eu/full_chunk-animator_downloads.svg" /></a></h2>
+    <h2>The Original Project <a href="https://www.curseforge.com/minecraft/mc-mods/chunk-animator/"> <img src="http://cf.way2muchnoise.eu/versions/chunk-animator.svg" /><img src="http://cf.way2muchnoise.eu/full_chunk-animator_downloads.svg" /></a></h2>
     <p>Click <a href="https://www.curseforge.com/minecraft/mc-mods/chunk-animator/">here</a> to view the old CurseForge page, with downloads for the above versions.</p> 
 </div>
