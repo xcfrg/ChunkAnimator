@@ -25,7 +25,7 @@ public class ChunkAnimator {
 		final ModLoadingContext loadingContext = ModLoadingContext.get();
 
 		loadingContext.registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
-		loadingContext.registerConfig(ModConfig.Type.CLIENT, ChunkAnimatorConfig.spec);
+		loadingContext.registerConfig(ModConfig.Type.CLIENT, ChunkAnimatorConfig.SPEC);
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupClient);
 	}

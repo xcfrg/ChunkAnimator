@@ -2,7 +2,6 @@ package lumien.chunkanimator.handler;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
-import lumien.chunkanimator.config.ChunkAnimatorConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
 import net.minecraft.util.Direction;
@@ -15,16 +14,21 @@ import java.util.WeakHashMap;
 
 public class AnimationHandler {
 
+	public static int mode;
+	public static int animationDuration;
+	public static int easingFunction;
+	public static boolean disableAroundPlayer;
+
 	private final Minecraft mc = Minecraft.getInstance();
 	private final WeakHashMap<ChunkRenderDispatcher.ChunkRender, AnimationData> timeStamps = new WeakHashMap<>();
 
 	public void preRender(ChunkRenderDispatcher.ChunkRender renderChunk, @Nullable MatrixStack matrixStack) {
-		if (!this.timeStamps.containsKey(renderChunk))
+		final AnimationData animationData = timeStamps.get(renderChunk);
+
+		if (animationData == null)
 			return;
 
-		AnimationData animationData = timeStamps.get(renderChunk);
 		long time = animationData.timeStamp;
-		int mode = ChunkAnimatorConfig.mode.get();
 
 		if (time == -1L) {
 			time = System.currentTimeMillis();
@@ -49,22 +53,20 @@ public class AnimationHandler {
 
 		long timeDif = System.currentTimeMillis() - time;
 
-		int animationDuration = ChunkAnimatorConfig.animationDuration.get();
-
 		if (timeDif < animationDuration) {
 			int chunkY = renderChunk.getPosition().getY();
 			double voidFogHeight = this.mc.world != null ? this.mc.world.getWorldInfo().getVoidFogHeight() : 63;
 
-			mode = mode == 2 ? (chunkY < voidFogHeight ? 0 : 1) : mode;
+			int animationMode = mode == 2 ? (chunkY < voidFogHeight ? 0 : 1) : mode;
 
-			if (mode == 4)
-				mode = 3;
+			if (animationMode == 4)
+				animationMode = 3;
 
 			// If the world is flat (fog height is 0), use mode 1 instead of 0 so we actually get some animation in flat worlds.
-			if (mode == 0 && voidFogHeight == 0)
-				mode = 1;
+			if (animationMode == 0 && voidFogHeight == 0)
+				animationMode = 1;
 
-			switch (mode) {
+			switch (animationMode) {
 				case 0:
 					this.translate(matrixStack, 0, -chunkY + getFunctionValue(timeDif, 0, chunkY, animationDuration), 0);
 					break;
@@ -106,7 +108,7 @@ public class AnimationHandler {
 	}
 
 	private float getFunctionValue(float t, float b, float c, float d) {
-		switch (ChunkAnimatorConfig.easingFunction.get()) {
+		switch (easingFunction) {
 			case 0: // Linear
 				return Linear.easeOut(t, b, c, d);
 			case 1: // Quadratic Out
@@ -143,14 +145,14 @@ public class AnimationHandler {
 		zeroedPlayerPosition = zeroedPlayerPosition.add(0, -zeroedPlayerPosition.getY(), 0);
 		BlockPos zeroedCenteredChunkPos = position.add(8, -position.getY(), 8);
 
-		if (ChunkAnimatorConfig.disableAroundPlayer.get()) {
+		if (disableAroundPlayer) {
 			flag = zeroedPlayerPosition.distanceSq(zeroedCenteredChunkPos) > (64 * 64);
 		}
 
 		if (flag) {
 			Direction chunkFacing = null;
 
-			if (ChunkAnimatorConfig.mode.get() == 3) {
+			if (mode == 3) {
 				Vector3i dif = zeroedPlayerPosition.subtract(zeroedCenteredChunkPos);
 
 				int difX = Math.abs(dif.getX());
@@ -171,8 +173,7 @@ public class AnimationHandler {
 				}
 			}
 
-			AnimationData animationData = new AnimationData(-1L, chunkFacing);
-			timeStamps.put(renderChunk, animationData);
+			timeStamps.put(renderChunk, new AnimationData(-1L, chunkFacing));
 		} else {
 			timeStamps.remove(renderChunk);
 		}

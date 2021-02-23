@@ -1,10 +1,16 @@
 package lumien.chunkanimator.config;
 
+import lumien.chunkanimator.handler.AnimationHandler;
+import lumien.chunkanimator.lib.Reference;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import net.minecraftforge.common.ForgeConfigSpec.IntValue;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import org.apache.commons.lang3.tuple.Pair;
 
+@Mod.EventBusSubscriber(modid = Reference.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ChunkAnimatorConfig {
 
 	// Animation Mode
@@ -19,12 +25,12 @@ public class ChunkAnimatorConfig {
 	// Disable Around Player
 	public static BooleanValue disableAroundPlayer;
 
-	public static final ForgeConfigSpec spec;
+	public static final ForgeConfigSpec SPEC;
 	public static final ChunkAnimatorConfig CONFIG;
 
 	static {
 		final Pair<ChunkAnimatorConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ChunkAnimatorConfig::new);
-		spec = specPair.getRight();
+		SPEC = specPair.getRight();
 		CONFIG = specPair.getLeft();
 	}
 
@@ -45,6 +51,23 @@ public class ChunkAnimatorConfig {
 
 		disableAroundPlayer = builder.comment("If enabled chunks that are next to the player will not animate")
 				.define("disableAroundPlayer", false);
+	}
+
+	@SubscribeEvent
+	public static void onLoad (final ModConfig.Loading event) {
+		updateAnimationHandlerValues();
+	}
+
+	@SubscribeEvent
+	public static void onReload (final ModConfig.Reloading event) {
+		updateAnimationHandlerValues();
+	}
+
+	public static void updateAnimationHandlerValues () {
+		AnimationHandler.mode = mode.get();
+		AnimationHandler.animationDuration = animationDuration.get();
+		AnimationHandler.easingFunction = easingFunction.get();
+		AnimationHandler.disableAroundPlayer = disableAroundPlayer.get();
 	}
 
 }
