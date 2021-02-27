@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3i;
+import net.minecraft.util.math.Vec3i;
 import penner.easing.*;
 
 import javax.annotation.Nullable;
@@ -42,7 +42,7 @@ public class AnimationHandler {
 
 				BlockPos zeroedCenteredChunkPos = renderChunk.getPosition().add(8, -renderChunk.getPosition().getY(), 8);
 
-				Vector3i dif = zeroedPlayerPosition.subtract(zeroedCenteredChunkPos);
+				Vec3i dif = zeroedPlayerPosition.subtract(zeroedCenteredChunkPos);
 
 				int difX = Math.abs(dif.getX());
 				int difZ = Math.abs(dif.getZ());
@@ -55,15 +55,15 @@ public class AnimationHandler {
 
 		if (timeDif < animationDuration) {
 			int chunkY = renderChunk.getPosition().getY();
-			double voidFogHeight = this.mc.world != null ? this.mc.world.getWorldInfo().getVoidFogHeight() : 63;
+			double horizonHeight = this.mc.world != null ? this.mc.world.getHorizonHeight() : 63;
 
-			int animationMode = mode == 2 ? (chunkY < voidFogHeight ? 0 : 1) : mode;
+			int animationMode = mode == 2 ? (chunkY < horizonHeight ? 0 : 1) : mode;
 
 			if (animationMode == 4)
 				animationMode = 3;
 
-			// If the world is flat (fog height is 0), use mode 1 instead of 0 so we actually get some animation in flat worlds.
-			if (animationMode == 0 && voidFogHeight == 0)
+			// If the world is flat (horizon height is 0), use mode 1 instead of 0 so we actually get some animation in flat worlds.
+			if (animationMode == 0 && horizonHeight == 0)
 				animationMode = 1;
 
 			switch (animationMode) {
@@ -77,7 +77,7 @@ public class AnimationHandler {
 					Direction chunkFacing = animationData.chunkFacing;
 
 					if (chunkFacing != null) {
-						Vector3i vec = chunkFacing.getDirectionVec();
+						Vec3i vec = chunkFacing.getDirectionVec();
 						double mod = -(200 - getFunctionValue(timeDif, 0, 200, animationDuration));
 
 						this.translate(matrixStack, vec.getX() * mod, 0, vec.getZ() * mod);
@@ -153,7 +153,7 @@ public class AnimationHandler {
 			Direction chunkFacing = null;
 
 			if (mode == 3) {
-				Vector3i dif = zeroedPlayerPosition.subtract(zeroedCenteredChunkPos);
+				Vec3i dif = zeroedPlayerPosition.subtract(zeroedCenteredChunkPos);
 
 				int difX = Math.abs(dif.getX());
 				int difZ = Math.abs(dif.getZ());
