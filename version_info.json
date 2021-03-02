@@ -1,10 +1,11 @@
 {
   "homepage": "https://www.curseforge.com/minecraft/mc-mods/chunk-animator",
   "1.15.2": {
+    "1.15.2-1.2.3": "Small release fixing small issue when playing on server.\n\nChanges:\n- Fixed mode 0 not working on servers that use the flat world property for void worlds.",
     "1.15.2-1.2.2": "Initial 1.15.2 release."
   },
   "promos": {
-    "1.15.2-latest": "1.15.2-1.2.2",
-    "1.15.2-recommended": "1.15.2-1.2.2"
+    "1.15.2-latest": "1.15.2-1.2.3",
+    "1.15.2-recommended": "1.15.2-1.2.3"
   }
 }
