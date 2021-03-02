@@ -2,7 +2,9 @@ package lumien.chunkanimator;
 
 import lumien.chunkanimator.config.ChunkAnimatorConfig;
 import lumien.chunkanimator.handler.AnimationHandler;
+import lumien.chunkanimator.handler.WorldEventHandler;
 import lumien.chunkanimator.lib.Reference;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -32,6 +34,8 @@ public class ChunkAnimator {
 
 	private void setupClient(final FMLClientSetupEvent event) {
 		this.animationHandler = new AnimationHandler();
+
+		MinecraftForge.EVENT_BUS.register(new WorldEventHandler());
 	}
 
 }

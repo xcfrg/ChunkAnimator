@@ -7,11 +7,14 @@ import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3i;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import penner.easing.*;
 
 import javax.annotation.Nullable;
 import java.util.WeakHashMap;
 
+@OnlyIn(Dist.CLIENT)
 public class AnimationHandler {
 
 	public static int mode;
@@ -21,6 +24,8 @@ public class AnimationHandler {
 
 	private final Minecraft mc = Minecraft.getInstance();
 	private final WeakHashMap<ChunkRenderDispatcher.ChunkRender, AnimationData> timeStamps = new WeakHashMap<>();
+
+	private double voidFogHeight = 63;
 
 	public void preRender(ChunkRenderDispatcher.ChunkRender renderChunk, @Nullable MatrixStack matrixStack) {
 		final AnimationData animationData = timeStamps.get(renderChunk);
@@ -55,16 +60,11 @@ public class AnimationHandler {
 
 		if (timeDif < animationDuration) {
 			int chunkY = renderChunk.getPosition().getY();
-			double voidFogHeight = this.mc.world != null ? this.mc.world.getWorldInfo().getVoidFogHeight() : 63;
 
-			int animationMode = mode == 2 ? (chunkY < voidFogHeight ? 0 : 1) : mode;
+			int animationMode = mode == 2 ? (chunkY < this.voidFogHeight ? 0 : 1) : mode;
 
 			if (animationMode == 4)
 				animationMode = 3;
-
-			// If the world is flat (fog height is 0), use mode 1 instead of 0 so we actually get some animation in flat worlds.
-			if (animationMode == 0 && voidFogHeight == 0)
-				animationMode = 1;
 
 			switch (animationMode) {
 				case 0:
@@ -177,6 +177,17 @@ public class AnimationHandler {
 		} else {
 			timeStamps.remove(renderChunk);
 		}
+	}
+
+	public void setVoidFogHeight(double voidFogHeight) {
+		this.voidFogHeight = voidFogHeight;
+	}
+
+	public void clear () {
+		// These should be cleared by GC, but just in case.
+		this.timeStamps.clear();
+		// Reset void fog height to default.
+		this.voidFogHeight = 63;
 	}
 
 	private static class AnimationData {
