@@ -22,6 +22,8 @@ public class AnimationHandler {
 	private final Minecraft mc = Minecraft.getInstance();
 	private final WeakHashMap<ChunkRenderDispatcher.ChunkRender, AnimationData> timeStamps = new WeakHashMap<>();
 
+	private double horizonHeight = 63;
+
 	public void preRender(ChunkRenderDispatcher.ChunkRender renderChunk, @Nullable MatrixStack matrixStack) {
 		final AnimationData animationData = timeStamps.get(renderChunk);
 
@@ -55,16 +57,11 @@ public class AnimationHandler {
 
 		if (timeDif < animationDuration) {
 			int chunkY = renderChunk.getPosition().getY();
-			double horizonHeight = this.mc.world != null ? this.mc.world.getHorizonHeight() : 63;
 
-			int animationMode = mode == 2 ? (chunkY < horizonHeight ? 0 : 1) : mode;
+			int animationMode = mode == 2 ? (chunkY < this.horizonHeight ? 0 : 1) : mode;
 
 			if (animationMode == 4)
 				animationMode = 3;
-
-			// If the world is flat (horizon height is 0), use mode 1 instead of 0 so we actually get some animation in flat worlds.
-			if (animationMode == 0 && horizonHeight == 0)
-				animationMode = 1;
 
 			switch (animationMode) {
 				case 0:
@@ -177,6 +174,17 @@ public class AnimationHandler {
 		} else {
 			timeStamps.remove(renderChunk);
 		}
+	}
+
+	public void setHorizonHeight(double horizonHeight) {
+		this.horizonHeight = horizonHeight;
+	}
+
+	public void clear () {
+		// These should be cleared by GC, but just in case.
+		this.timeStamps.clear();
+		// Reset void fog height to default.
+		this.horizonHeight = 63;
 	}
 
 	private static class AnimationData {
