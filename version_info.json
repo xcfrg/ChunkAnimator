@@ -1,12 +1,13 @@
 {
   "homepage": "https://www.curseforge.com/minecraft/mc-mods/chunk-animator",
   "1.16.5": {
+    "1.16.5-1.2.3": "Small release fixing small issue when playing on server.\n\nChanges:\n- Fixed mode 0 not working on servers that use the flat world property for void worlds.",
     "1.16.5-1.2.2": "Initial 1.16.5(/4) release on original CurseForge page.",
     "1.16.5-1.2.1": "Small release fixing dedicated server crash and doing some *very minor* performance improvements (don’t get too excited, you probably won’t even notice it).\n\nChanges:\n- Fixed crash when loading on dedicated server, chunk animator is now just ignored.\n- Very minor performance improvements.",
     "1.16.5-1.2.0": "Initial release for 1.16.5(/4)."
   },
   "promos": {
-    "1.16.5-latest": "1.16.5-1.2.2",
-    "1.16.5-recommended": "1.16.5-1.2.2"
+    "1.16.5-latest": "1.16.5-1.2.3",
+    "1.16.5-recommended": "1.16.5-1.2.3"
   }
 }
