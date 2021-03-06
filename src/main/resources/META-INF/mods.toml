@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[31,)"
+loaderVersion="[28,)"
 
 issueTrackerURL="https://github.com/Harleyoc1/ChunkAnimator/issues"
 
@@ -19,18 +19,18 @@ A small client side mod that animates the appeareance of chunks so that they don
 '''
 
 displayURL="https://www.curseforge.com/minecraft/mc-mods/chunk-animator"
-updateJSONURL="https://github.com/Harleyoc1/ChunkAnimator/blob/1.15.2/version_info.json?raw=true"
+updateJSONURL="https://github.com/Harleyoc1/ChunkAnimator/blob/1.14.4/version_info.json?raw=true"
 
 [[dependencies.chunkanimator]]
     modId="forge"
     mandatory=true
-    versionRange="[31,)"
+    versionRange="[28,)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.chunkanimator]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.15.2,)"
+    versionRange="[1.14.4,)"
     ordering="NONE"
     side="BOTH"

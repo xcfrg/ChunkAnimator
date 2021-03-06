@@ -1,8 +1,14 @@
 # Chunk Animator [![](http://cf.way2muchnoise.eu/versions/chunk-animator.svg) ![](http://cf.way2muchnoise.eu/full_chunk-animator_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/chunk-animator/)
-This is a fork of <a href="https://github.com/lumien231">lumien231</a>’s [Chunk Animator](https://github.com/lumien231/Chunk-Animator) which includes support for newer Minecraft versions, specifically 1.16.4/5 at the moment. I also plan on adding new features as requested (for any version), and if enough people want it I will port to other versions too. 
+This is a fork of <a href="https://github.com/lumien231">lumien231</a>’s [Chunk Animator](https://github.com/lumien231/Chunk-Animator) which includes support for newer Minecraft versions, including 1.14.4, 1.15.2, and 1.16.5. I also plan on adding new features as requested (for any version), and if enough people want it I will port to other versions too.
 
-This can be downloaded from the [The CurseForge page](https://www.curseforge.com/minecraft/mc-mods/chunk-animator/).
+This branch is for the 1.14.4 version of Minecraft.
 
+## Links
+- [Downloads](https://www.curseforge.com/minecraft/mc-mods/chunk-animator/)
+- [Config Help](https://github.com/Harleyoc1/ChunkAnimator/wiki/Config)
+- [Easing Function Comparisons](https://easings.net)
+
+## Description
 When new chunks are loaded in vanilla minecraft they simply "appear instantly", with this mod they can be animated to appear from below, above, or the side. This mod shouldn't impact FPS considerably because all it does is render chunks "somewhere else".
 
 ## Usage

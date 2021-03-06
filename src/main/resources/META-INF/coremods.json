@@ -1,4 +1,4 @@
 {
 	"RenderChunk": "transformer/ChunkRender.js",
-	"WorldRenderer": "transformer/WorldRenderer.js"
+	"ChunkRenderContainer": "transformer/ChunkRenderContainer.js"
 }

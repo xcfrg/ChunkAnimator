@@ -17,7 +17,7 @@ public final class WorldEventHandler {
         if (!(event.getWorld() instanceof ClientWorld))
             return;
 
-        handler.setHorizonHeight(((ClientWorld) event.getWorld()).getHorizonHeight());
+        handler.setHorizon(((ClientWorld) event.getWorld()).getHorizon());
     }
 
     @SubscribeEvent

@@ -59,7 +59,7 @@ public class ChunkAnimatorConfig {
 	}
 
 	@SubscribeEvent
-	public static void onReload (final ModConfig.Reloading event) {
+	public static void onReload (final ModConfig.ConfigReloading event) {
 		updateAnimationHandlerValues();
 	}
 

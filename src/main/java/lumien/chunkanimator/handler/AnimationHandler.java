@@ -1,15 +1,13 @@
 package lumien.chunkanimator.handler;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
+import net.minecraft.client.renderer.chunk.ChunkRender;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import penner.easing.*;
 
-import javax.annotation.Nullable;
 import java.util.WeakHashMap;
 
 public class AnimationHandler {
@@ -20,11 +18,11 @@ public class AnimationHandler {
 	public static boolean disableAroundPlayer;
 
 	private final Minecraft mc = Minecraft.getInstance();
-	private final WeakHashMap<ChunkRenderDispatcher.ChunkRender, AnimationData> timeStamps = new WeakHashMap<>();
+	private final WeakHashMap<ChunkRender, AnimationData> timeStamps = new WeakHashMap<>();
 
-	private double horizonHeight = 63;
+	private double horizon = 63;
 
-	public void preRender(ChunkRenderDispatcher.ChunkRender renderChunk, @Nullable MatrixStack matrixStack) {
+	public void preRender(ChunkRender renderChunk) {
 		final AnimationData animationData = timeStamps.get(renderChunk);
 
 		if (animationData == null)
@@ -58,17 +56,17 @@ public class AnimationHandler {
 		if (timeDif < animationDuration) {
 			int chunkY = renderChunk.getPosition().getY();
 
-			int animationMode = mode == 2 ? (chunkY < this.horizonHeight ? 0 : 1) : mode;
+			int animationMode = mode == 2 ? (chunkY < this.horizon ? 0 : 1) : mode;
 
 			if (animationMode == 4)
 				animationMode = 3;
 
 			switch (animationMode) {
 				case 0:
-					this.translate(matrixStack, 0, -chunkY + getFunctionValue(timeDif, 0, chunkY, animationDuration), 0);
+					GlStateManager.translated(0, -chunkY + getFunctionValue(timeDif, 0, chunkY, animationDuration), 0);
 					break;
 				case 1:
-					this.translate(matrixStack, 0, 256 - chunkY - getFunctionValue(timeDif, 0, 256 - chunkY, animationDuration), 0);
+					GlStateManager.translated(0, 256 - chunkY - getFunctionValue(timeDif, 0, 256 - chunkY, animationDuration), 0);
 					break;
 				case 3:
 					Direction chunkFacing = animationData.chunkFacing;
@@ -77,30 +75,12 @@ public class AnimationHandler {
 						Vec3i vec = chunkFacing.getDirectionVec();
 						double mod = -(200 - getFunctionValue(timeDif, 0, 200, animationDuration));
 
-						this.translate(matrixStack, vec.getX() * mod, 0, vec.getZ() * mod);
+						GlStateManager.translated(vec.getX() * mod, 0, vec.getZ() * mod);
 					}
 					break;
 			}
 		} else {
 			this.timeStamps.remove(renderChunk);
-		}
-	}
-
-	/**
-	 * Translates with correct method, depending on whether OptiFine is installed ({@link MatrixStack}
-	 * not used so set to null), or not.
-	 *
-	 * @param matrixStack The {@link MatrixStack} object, or null if OptiFine is loaded.
-	 * @param x The x to translate by.
-	 * @param y The y to translate by.
-	 * @param z The z to tranlsate by.
-	 */
-	@SuppressWarnings("deprecation") // OptiFine doesn't give us a choice in using GlStateManager.translated
-	private void translate (@Nullable MatrixStack matrixStack, double x, double y, double z) {
-		if (matrixStack == null) {
-			GlStateManager.translated(x, y, z); // OptiFine uses GlStateManger still.
-		} else {
-			matrixStack.translate(x, y, z);
 		}
 	}
 
@@ -133,7 +113,7 @@ public class AnimationHandler {
 		return Sine.easeOut(t, b, c, d);
 	}
 
-	public void setOrigin(ChunkRenderDispatcher.ChunkRender renderChunk, BlockPos position) {
+	public void setOrigin(ChunkRender renderChunk, BlockPos position) {
 		if (this.mc.player == null)
 			return;
 
@@ -176,15 +156,15 @@ public class AnimationHandler {
 		}
 	}
 
-	public void setHorizonHeight(double horizonHeight) {
-		this.horizonHeight = horizonHeight;
+	public void setHorizon(double horizon) {
+		this.horizon = horizon;
 	}
 
 	public void clear () {
 		// These should be cleared by GC, but just in case.
 		this.timeStamps.clear();
 		// Reset void fog height to default.
-		this.horizonHeight = 63;
+		this.horizon = 63;
 	}
 
 	private static class AnimationData {
