@@ -2,7 +2,9 @@ package lumien.chunkanimator.handler;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import lumien.chunkanimator.config.ChunkAnimatorConfig;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -14,71 +16,62 @@ import penner.easing.*;
 import javax.annotation.Nullable;
 import java.util.WeakHashMap;
 
+/**
+ * This class handles setting up and rendering the animations.
+ *
+ * @author lumien231
+ */
 @OnlyIn(Dist.CLIENT)
 public class AnimationHandler {
-
-	public static int mode;
-	public static int animationDuration;
-	public static int easingFunction;
-	public static boolean disableAroundPlayer;
 
 	private final Minecraft mc = Minecraft.getInstance();
 	private final WeakHashMap<ChunkRenderDispatcher.ChunkRender, AnimationData> timeStamps = new WeakHashMap<>();
 
-	private double voidFogHeight = 63;
+	private double horizontalHeight = 63;
 
-	public void preRender(ChunkRenderDispatcher.ChunkRender renderChunk, @Nullable MatrixStack matrixStack) {
+	public void preRender(final ChunkRenderDispatcher.ChunkRender renderChunk, @Nullable final MatrixStack matrixStack) {
 		final AnimationData animationData = timeStamps.get(renderChunk);
 
 		if (animationData == null)
 			return;
 
+		final int mode = ChunkAnimatorConfig.MODE.get();
+		final int animationDuration = ChunkAnimatorConfig.ANIMATION_DURATION.get();
+
 		long time = animationData.timeStamp;
 
+		// If preRender hasn't been called on this chunk yet, prepare to start the animation.
 		if (time == -1L) {
 			time = System.currentTimeMillis();
 
 			animationData.timeStamp = time;
 
-			// Mode 4 Set Chunk Facing
+			// If using mode 4, set chunkFacing.
 			if (mode == 4) {
-				BlockPos zeroedPlayerPosition = this.mc.player != null ? this.mc.player.getPosition() : BlockPos.ZERO;
-				zeroedPlayerPosition = zeroedPlayerPosition.add(0, -zeroedPlayerPosition.getY(), 0);
-
-				BlockPos zeroedCenteredChunkPos = renderChunk.getPosition().add(8, -renderChunk.getPosition().getY(), 8);
-
-				Vector3i dif = zeroedPlayerPosition.subtract(zeroedCenteredChunkPos);
-
-				int difX = Math.abs(dif.getX());
-				int difZ = Math.abs(dif.getZ());
-
-				animationData.chunkFacing = difX > difZ ? (dif.getX() > 0 ? Direction.EAST : Direction.WEST) : (dif.getZ() > 0 ? Direction.SOUTH : Direction.NORTH);
+				animationData.chunkFacing = this.mc.player != null ?
+						this.getChunkFacing(this.getZeroedPlayerPos(this.mc.player).subtract(this.getZeroedCenteredChunkPos(renderChunk.getOrigin()))) : Direction.NORTH;
 			}
 		}
 
-		long timeDif = System.currentTimeMillis() - time;
+		final long timeDif = System.currentTimeMillis() - time;
 
 		if (timeDif < animationDuration) {
-			int chunkY = renderChunk.getPosition().getY();
-
-			int animationMode = mode == 2 ? (chunkY < this.voidFogHeight ? 0 : 1) : mode;
-
-			if (animationMode == 4)
-				animationMode = 3;
+			final int chunkY = renderChunk.getOrigin().getY();
+			final int animationMode = mode == 2 ? (chunkY < this.horizontalHeight ? 0 : 1) : mode == 4 ? 3 : mode;
 
 			switch (animationMode) {
 				case 0:
-					this.translate(matrixStack, 0, -chunkY + getFunctionValue(timeDif, 0, chunkY, animationDuration), 0);
+					this.translate(matrixStack, 0, -chunkY + this.getFunctionValue(timeDif, 0, chunkY, animationDuration), 0);
 					break;
 				case 1:
-					this.translate(matrixStack, 0, 256 - chunkY - getFunctionValue(timeDif, 0, 256 - chunkY, animationDuration), 0);
+					this.translate(matrixStack, 0, 256 - chunkY - this.getFunctionValue(timeDif, 0, 256 - chunkY, animationDuration), 0);
 					break;
 				case 3:
 					Direction chunkFacing = animationData.chunkFacing;
 
 					if (chunkFacing != null) {
-						Vector3i vec = chunkFacing.getDirectionVec();
-						double mod = -(200 - getFunctionValue(timeDif, 0, 200, animationDuration));
+						final Vector3i vec = chunkFacing.getNormal();
+						final double mod = -(200 - this.getFunctionValue(timeDif, 0, 200, animationDuration));
 
 						this.translate(matrixStack, vec.getX() * mod, 0, vec.getZ() * mod);
 					}
@@ -96,19 +89,28 @@ public class AnimationHandler {
 	 * @param matrixStack The {@link MatrixStack} object, or null if OptiFine is loaded.
 	 * @param x The x to translate by.
 	 * @param y The y to translate by.
-	 * @param z The z to tranlsate by.
+	 * @param z The z to translate by.
 	 */
-	@SuppressWarnings("deprecation") // OptiFine doesn't give us a choice in using GlStateManager.translated
-	private void translate (@Nullable MatrixStack matrixStack, double x, double y, double z) {
+	@SuppressWarnings("deprecation")
+	private void translate (@Nullable final MatrixStack matrixStack, final double x, final double y, final double z) {
 		if (matrixStack == null) {
-			GlStateManager.translated(x, y, z); // OptiFine uses GlStateManger still.
+			GlStateManager._translated(x, y, z); // OptiFine still uses GlStateManager.
 		} else {
 			matrixStack.translate(x, y, z);
 		}
 	}
 
-	private float getFunctionValue(float t, float b, float c, float d) {
-		switch (easingFunction) {
+	/**
+	 * Gets the function value for the given parameters based on {@link ChunkAnimatorConfig#EASING_FUNCTION}.
+	 *
+	 * @param t The first function argument.
+	 * @param b The second function argument.
+	 * @param c The third function argument.
+	 * @param d The fourth function argument.
+	 * @return The return value of the function.
+	 */
+	private float getFunctionValue(final float t, @SuppressWarnings("SameParameterValue") final float b, final float c, final float d) {
+		switch (ChunkAnimatorConfig.EASING_FUNCTION.get()) {
 			case 0: // Linear
 				return Linear.easeOut(t, b, c, d);
 			case 1: // Quadratic Out
@@ -136,66 +138,73 @@ public class AnimationHandler {
 		return Sine.easeOut(t, b, c, d);
 	}
 
-	public void setOrigin(ChunkRenderDispatcher.ChunkRender renderChunk, BlockPos position) {
+	public void setOrigin(final ChunkRenderDispatcher.ChunkRender renderChunk, final BlockPos position) {
 		if (this.mc.player == null)
 			return;
 
-		boolean flag = true;
-		BlockPos zeroedPlayerPosition = this.mc.player.getPosition();
-		zeroedPlayerPosition = zeroedPlayerPosition.add(0, -zeroedPlayerPosition.getY(), 0);
-		BlockPos zeroedCenteredChunkPos = position.add(8, -position.getY(), 8);
+		final BlockPos zeroedPlayerPos = this.getZeroedPlayerPos(this.mc.player);
+		final BlockPos zeroedCenteredChunkPos = this.getZeroedCenteredChunkPos(position);
 
-		if (disableAroundPlayer) {
-			flag = zeroedPlayerPosition.distanceSq(zeroedCenteredChunkPos) > (64 * 64);
-		}
-
-		if (flag) {
-			Direction chunkFacing = null;
-
-			if (mode == 3) {
-				Vector3i dif = zeroedPlayerPosition.subtract(zeroedCenteredChunkPos);
-
-				int difX = Math.abs(dif.getX());
-				int difZ = Math.abs(dif.getZ());
-
-				if (difX > difZ) {
-					if (dif.getX() > 0) {
-						chunkFacing = Direction.EAST;
-					} else {
-						chunkFacing = Direction.WEST;
-					}
-				} else {
-					if (dif.getZ() > 0) {
-						chunkFacing = Direction.SOUTH;
-					} else {
-						chunkFacing = Direction.NORTH;
-					}
-				}
-			}
-
-			timeStamps.put(renderChunk, new AnimationData(-1L, chunkFacing));
+		if (!ChunkAnimatorConfig.DISABLE_AROUND_PLAYER.get() || zeroedPlayerPos.distSqr(zeroedCenteredChunkPos) > (64 * 64)) {
+			timeStamps.put(renderChunk, new AnimationData(-1L, ChunkAnimatorConfig.MODE.get() == 3 ?
+					this.getChunkFacing(zeroedPlayerPos.subtract(zeroedCenteredChunkPos)) : null));
 		} else {
 			timeStamps.remove(renderChunk);
 		}
 	}
 
-	public void setVoidFogHeight(double voidFogHeight) {
-		this.voidFogHeight = voidFogHeight;
+	/**
+	 * Gets the given player's position, setting their {@code y-coordinate} to {@code 0}.
+	 *
+	 * @param player The {@link ClientPlayerEntity} instance.
+	 * @return The zeroed {@link BlockPos}.
+	 */
+	private BlockPos getZeroedPlayerPos (final ClientPlayerEntity player) {
+		final BlockPos playerPos = player.blockPosition();
+		return playerPos.offset(0, -playerPos.getY(), 0);
+	}
+
+	/**
+	 * Gets the given {@link BlockPos} for the chunk, setting its {@code y-coordinate} to
+	 * {@code 0} and offsetting its {@code x} and {@code y-coordinate} to by {@code 8}.
+	 *
+	 * @param position The {@link BlockPos} of the chunk.
+	 * @return The zeroed, centered {@link BlockPos}.
+	 */
+	private BlockPos getZeroedCenteredChunkPos(final BlockPos position) {
+		return position.offset(8, -position.getY(), 8);
+	}
+
+	/**
+	 * Gets the direction the chunk is facing based on the given {@link Vector3i}
+	 * from the relevant position to the chunk.
+	 *
+	 * @param dif The {@link Vector3i} distance from the relevant position to the chunk.
+	 * @return The {@link Direction} of the chunk relative to the {@code dif}.
+	 */
+	private Direction getChunkFacing(final Vector3i dif) {
+		int difX = Math.abs(dif.getX());
+		int difZ = Math.abs(dif.getZ());
+
+		return difX > difZ ? dif.getX() > 0 ? Direction.EAST : Direction.WEST : dif.getZ() > 0 ? Direction.SOUTH : Direction.NORTH;
+	}
+
+	public void setHorizontalHeight(final double horizontalHeight) {
+		this.horizontalHeight = horizontalHeight;
 	}
 
 	public void clear () {
 		// These should be cleared by GC, but just in case.
 		this.timeStamps.clear();
 		// Reset void fog height to default.
-		this.voidFogHeight = 63;
+		this.horizontalHeight = 63;
 	}
 
 	private static class AnimationData {
 		public long timeStamp;
-
 		public Direction chunkFacing;
 
-		public AnimationData(long timeStamp, Direction chunkFacing) {
+		public AnimationData(final long timeStamp, final Direction chunkFacing) {
 			this.timeStamp = timeStamp;
 			this.chunkFacing = chunkFacing;
 		}

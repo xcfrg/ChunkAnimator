@@ -3,7 +3,6 @@ package lumien.chunkanimator;
 import lumien.chunkanimator.config.ChunkAnimatorConfig;
 import lumien.chunkanimator.handler.AnimationHandler;
 import lumien.chunkanimator.handler.WorldEventHandler;
-import lumien.chunkanimator.lib.Reference;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -14,8 +13,13 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.FMLNetworkConstants;
 import org.apache.commons.lang3.tuple.Pair;
 
-@Mod(Reference.MOD_ID)
+/**
+ * @author lumien231
+ */
+@Mod(ChunkAnimator.MOD_ID)
 public class ChunkAnimator {
+
+	public static final String MOD_ID = "chunkanimator";
 
 	public static ChunkAnimator INSTANCE;
 
@@ -32,6 +36,11 @@ public class ChunkAnimator {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupClient);
 	}
 
+	/**
+	 * Performs setup tasks that should only be run on the client.
+	 *
+	 * @param event The {@link FMLClientSetupEvent} instance.
+	 */
 	private void setupClient(final FMLClientSetupEvent event) {
 		this.animationHandler = new AnimationHandler();
 

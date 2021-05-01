@@ -1,52 +1,54 @@
 function initializeCoreMod() {
     return {
-        'coremodone': {
+        'WorldRenderer#renderChunkLayer': {
             'target': {
-                'type': 'CLASS',
-                'name': 'net.minecraft.client.renderer.WorldRenderer'
+                'type': 'METHOD',
+                'class': 'net.minecraft.client.renderer.WorldRenderer',
+                'methodName': 'func_228441_a_', // renderChunkLayer
+                'methodDesc': '(Lnet/minecraft/client/renderer/RenderType;Lcom/mojang/blaze3d/matrix/MatrixStack;DDD)V'
             },
-            'transformer': function (classNode) {
-            	var asmHandler = "lumien/chunkanimator/handler/AsmHandler";
-            	
+            'transformer': function (methodNode) {
                 var Opcodes = Java.type("org.objectweb.asm.Opcodes");
 
                 var MethodInsnNode = Java.type("org.objectweb.asm.tree.MethodInsnNode");
                 var VarInsnNode = Java.type("org.objectweb.asm.tree.VarInsnNode");
+                var InsnNode = Java.type("org.objectweb.asm.tree.InsnNode")
+                var TypeInsnNode = Java.type("org.objectweb.asm.tree.TypeInsnNode")
 
-                var api = Java.type('net.minecraftforge.coremod.api.ASMAPI');
+                var matrixStack = "com/mojang/blaze3d/matrix/MatrixStack";
 
-                var preRenderChunkMethod = "preRenderChunk";
+                var code = methodNode.instructions;
+                var instr = code.toArray();
 
-                var chunkRenderParam = "Lnet/minecraft/client/renderer/chunk/ChunkRenderDispatcher$ChunkRender";
-                var matrixStackParam = "Lcom/mojang/blaze3d/matrix/MatrixStack";
+                for (i in instr) {
+                    var instruction = instr[i];
 
-                var methods = classNode.methods;
+                    if (!(instruction instanceof MethodInsnNode))
+                        continue;
 
-                for (m in methods) {
-                    var method = methods[m];
-                    if (method.name === "renderBlockLayer" || method.name === "func_228441_a_") {
-                        var code = method.instructions;
-                        var instr = code.toArray();
-                        for (t in instr) {
-                            var instruction = instr[t];
+                    // This will be true if OptiFine is loaded, and the current instruction is GlStateManager.translated (OptiFine uses this instead of MatrixStack.translate).
+                    var optifine = instruction.name === "_translated" || instruction.name === "func_227670_b_";
 
-                            // This will be true if OptiFine is loaded, and the current instruction is GlStateManager.translated (OptiFine uses this instead of MatrixStack.translate).
-                            var optifine = instruction.name === "translated" || instruction.name === "func_227670_b_";
+                    if (!optifine && instruction.name !== "translate" && instruction.name !== "func_227861_a_")
+                        continue;
 
-                            if (instruction instanceof MethodInsnNode && (instruction.name === "translate" || instruction.name === "func_227861_a_" || optifine)) {
-                            	code.insertBefore(instruction, new VarInsnNode(Opcodes.ALOAD, optifine ? 14 : 12));
+                    code.insertBefore(instruction, new VarInsnNode(Opcodes.ALOAD, optifine ? 14 : 12));
 
-                            	if (!optifine) {
-                                    code.insertBefore(instruction, new VarInsnNode(Opcodes.ALOAD, 2));
-                                }
-
-                                code.insertBefore(instruction, new MethodInsnNode(Opcodes.INVOKESTATIC, asmHandler, preRenderChunkMethod, "(" + chunkRenderParam + (!optifine ? ";" + matrixStackParam : "") + ";)V", false));
-                            }
-                        }
+                    // If using OptiFine make MatrixStack parameter null (and cast to MatrixStack), otherwise load the MatrixStack parameter.
+                    if (optifine) {
+                        code.insertBefore(instruction, new InsnNode(Opcodes.ACONST_NULL));
+                        code.insertBefore(instruction, new TypeInsnNode(Opcodes.CHECKCAST, matrixStack));
+                    } else {
+                        code.insertBefore(instruction, new VarInsnNode(Opcodes.ALOAD, 2));
                     }
+
+                    // Invoke AsmHandler#preRenderChunk with the ChunkRender and the MatrixStack (or null if using OptiFine).
+                    code.insertBefore(instruction, new MethodInsnNode(Opcodes.INVOKESTATIC, "lumien/chunkanimator/handler/AsmHandler", "preRenderChunk",
+                        "(Lnet/minecraft/client/renderer/chunk/ChunkRenderDispatcher$ChunkRender;L" + matrixStack + ";)V", false));
+                    break;
                 }
 
-                return classNode;
+                return methodNode;
             }
         }
     }

@@ -28,7 +28,7 @@ archivesBaseName = config.mod_name
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
 minecraft {
-    mappings channel: 'snapshot', version: "${config.mappings_version}-${config.mc_version}"
+    mappings channel: 'official', version: config.mc_version
 
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -58,21 +58,6 @@ minecraft {
                 }
             }
         }
-
-        data {
-            workingDirectory project.file('run')
-
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property 'forge.logging.console.level', 'debug'
-
-            args '--mod', config.mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
-            mods {
-                chunkanimator {
-                    source sourceSets.main
-                }
-            }
-        }
     }
 }
 
@@ -88,7 +73,7 @@ jar {
                 "Specification-Version": "1",
                 "Implementation-Title": project.name,
                 "Implementation-Version": project.version,
-                "Implementation-Vendor" :"Harley O'Connor", // I am the author of this port.
+                "Implementation-Vendor" : "Harley O'Connor", // I am the author of this port.
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
