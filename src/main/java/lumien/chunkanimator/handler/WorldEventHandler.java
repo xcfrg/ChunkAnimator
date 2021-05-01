@@ -19,14 +19,6 @@ public final class WorldEventHandler {
     private static final AnimationHandler handler = ChunkAnimator.INSTANCE.animationHandler;
 
     @SubscribeEvent
-    public void worldLoad (final WorldEvent.Load event) {
-        if (!(event.getWorld() instanceof ClientWorld))
-            return;
-
-        handler.setHorizontalHeight(((ClientWorld) event.getWorld()).getLevelData().getHorizonHeight());
-    }
-
-    @SubscribeEvent
     public void worldUnload (final WorldEvent.Unload event) {
         if (!(event.getWorld() instanceof ClientWorld))
             return;

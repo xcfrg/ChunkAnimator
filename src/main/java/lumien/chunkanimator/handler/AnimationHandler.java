@@ -14,6 +14,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import penner.easing.*;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.WeakHashMap;
 
 /**
@@ -26,8 +27,6 @@ public class AnimationHandler {
 
 	private final Minecraft mc = Minecraft.getInstance();
 	private final WeakHashMap<ChunkRenderDispatcher.ChunkRender, AnimationData> timeStamps = new WeakHashMap<>();
-
-	private double horizontalHeight = 63;
 
 	public void preRender(final ChunkRenderDispatcher.ChunkRender renderChunk, @Nullable final MatrixStack matrixStack) {
 		final AnimationData animationData = timeStamps.get(renderChunk);
@@ -57,7 +56,7 @@ public class AnimationHandler {
 
 		if (timeDif < animationDuration) {
 			final int chunkY = renderChunk.getOrigin().getY();
-			final int animationMode = mode == 2 ? (chunkY < this.horizontalHeight ? 0 : 1) : mode == 4 ? 3 : mode;
+			final int animationMode = mode == 2 ? (chunkY < Objects.requireNonNull(this.mc.level).getLevelData().getHorizonHeight() ? 0 : 1) : mode == 4 ? 3 : mode;
 
 			switch (animationMode) {
 				case 0:
@@ -189,15 +188,9 @@ public class AnimationHandler {
 		return difX > difZ ? dif.getX() > 0 ? Direction.EAST : Direction.WEST : dif.getZ() > 0 ? Direction.SOUTH : Direction.NORTH;
 	}
 
-	public void setHorizontalHeight(final double horizontalHeight) {
-		this.horizontalHeight = horizontalHeight;
-	}
-
 	public void clear () {
 		// These should be cleared by GC, but just in case.
 		this.timeStamps.clear();
-		// Reset void fog height to default.
-		this.horizontalHeight = 63;
 	}
 
 	private static class AnimationData {
