@@ -1,5 +1,5 @@
 # Chunk Animator [![](http://cf.way2muchnoise.eu/versions/chunk-animator.svg) ![](http://cf.way2muchnoise.eu/full_chunk-animator_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/chunk-animator/)
-This is a fork of <a href="https://github.com/lumien231">lumien231</a>’s [Chunk Animator](https://github.com/lumien231/Chunk-Animator) which includes support for newer Minecraft versions, specifically 1.16.4/5 at the moment. I also plan on adding new features as requested (for any version), and if enough people want it I will port to other versions too. 
+This is a fork of <a href="https://github.com/lumien231">lumien231</a>’s [Chunk Animator](https://github.com/lumien231/Chunk-Animator) which includes support for newer Minecraft versions. 
 
 This can be downloaded from the [The CurseForge page](https://www.curseforge.com/minecraft/mc-mods/chunk-animator/).
 
