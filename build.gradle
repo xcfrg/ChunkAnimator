@@ -19,6 +19,7 @@ minecraft {
     runDir = "run"
     mappings = "stable_22"
     makeObfSourceJar = false
+    clientJvmArgs += "-Dfml.coreMods.load=lumien.chunkanimator.asm.LoadingPlugin"
 }
 
 jar {
