@@ -14,12 +14,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class ChunkAnimator {
     public static final String MOD_ID = "ChunkAnimator";
     public static final String MOD_NAME = "Chunk Animator";
-    public static final String MOD_VERSION = "@VERSION@";
+    public static final String MOD_VERSION = "1.2.0";
+
     @Instance(value = ChunkAnimator.MOD_ID)
     public static ChunkAnimator INSTANCE;
 
     public AnimationHandler animationHandler;
-
     public ChunkAnimatorConfig config;
 
     @EventHandler

@@ -7,7 +7,7 @@ repositories {
     mavenCentral()
 }
 
-version = "1.1.0"
+version = "1.2.0"
 group= "lumien.chunkanimator"
 archivesBaseName = "ChunkAnimator-mc1.8.9"
 
