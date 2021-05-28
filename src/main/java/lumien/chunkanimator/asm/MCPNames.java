@@ -1,17 +1,17 @@
 package lumien.chunkanimator.asm;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.NoSuchElementException;
-
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import com.google.common.io.LineProcessor;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 public class MCPNames
 {

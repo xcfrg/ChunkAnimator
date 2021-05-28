@@ -1,8 +1,5 @@
 package lumien.chunkanimator.handler;
 
-import java.util.HashMap;
-import java.util.WeakHashMap;
-
 import lumien.chunkanimator.ChunkAnimator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -10,6 +7,8 @@ import net.minecraft.client.renderer.chunk.RenderChunk;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Vec3i;
+
+import java.util.WeakHashMap;
 
 public class AnimationHandler
 {

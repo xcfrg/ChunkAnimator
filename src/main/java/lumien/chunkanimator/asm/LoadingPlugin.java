@@ -1,8 +1,8 @@
 package lumien.chunkanimator.asm;
 
-import java.util.Map;
-
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
+
+import java.util.Map;
 
 @IFMLLoadingPlugin.SortingIndex(1001)
 public class LoadingPlugin implements IFMLLoadingPlugin
